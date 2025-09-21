@@ -1,0 +1,393 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  phone     String?
+  name      String
+  password  String
+  userType  UserType @default(CLIENT)
+  avatar    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // User can be both client and provider
+  clientProfile   ClientProfile?
+  providerProfile ProviderProfile?
+
+  // Relations
+  sentMessages     Message[] @relation("MessageSender")
+  receivedMessages Message[] @relation("MessageReceiver")
+  reviews          Review[]
+  bookings         Booking[]
+  posts            Post[]
+  comments         Comment[]
+  postLikes        PostLike[]
+  following        Follow[] @relation("UserFollowing")
+  followers        Follow[] @relation("UserFollowers")
+
+  @@map("users")
+}
+
+model ClientProfile {
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  address String?
+  city    String?
+  state   String?
+  zipCode String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("client_profiles")
+}
+
+model ProviderProfile {
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Basic info
+  description String?
+  experience  Int? // years of experience
+  verified    Boolean @default(false)
+  active      Boolean @default(true)
+
+  // Location
+  address       String?
+  city          String
+  state         String
+  zipCode       String?
+  serviceRadius Int? // km radius they serve
+  
+  // Service Coverage
+  serviceCities String? // JSON array of cities served
+  serviceAreas  String? // JSON array of service areas
+
+  // Business info
+  businessName String?
+  document     String? // CPF or CNPJ
+
+  // Pricing
+  hourlyRate Float?
+  dailyRate  Float?
+
+  // Stats
+  rating       Float?
+  totalReviews Int      @default(0)
+  totalJobs    Int      @default(0)
+  responseTime Int? // average response time in minutes
+
+  // Subscription
+  subscriptionId     String?
+  subscription       Subscription? @relation(fields: [subscriptionId], references: [id])
+  subscriptionEndsAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  services            ProviderService[]
+  portfolios          Portfolio[]
+  availabilities      Availability[]
+  bookings            Booking[]
+  receivedReviews     Review[]             @relation("ProviderReviews")
+  whatsappIntegration WhatsAppIntegration?
+
+  @@map("provider_profiles")
+}
+
+model ServiceCategory {
+  id          String  @id @default(cuid())
+  name        String  @unique
+  slug        String  @unique
+  description String?
+  icon        String?
+  active      Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  services ProviderService[]
+
+  @@map("service_categories")
+}
+
+model ProviderService {
+  id         String          @id @default(cuid())
+  providerId String
+  provider   ProviderProfile @relation(fields: [providerId], references: [id], onDelete: Cascade)
+
+  categoryId String
+  category   ServiceCategory @relation(fields: [categoryId], references: [id])
+
+  title       String
+  description String?
+  price       Float?
+  priceType   PriceType @default(FIXED) // FIXED, HOURLY, DAILY, NEGOTIABLE
+
+  active Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  bookings Booking[]
+
+  @@map("provider_services")
+}
+
+model Portfolio {
+  id         String          @id @default(cuid())
+  providerId String
+  provider   ProviderProfile @relation(fields: [providerId], references: [id], onDelete: Cascade)
+
+  title       String
+  description String?
+  images      String // JSON string of image URLs
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("portfolios")
+}
+
+model Availability {
+  id         String          @id @default(cuid())
+  providerId String
+  provider   ProviderProfile @relation(fields: [providerId], references: [id], onDelete: Cascade)
+
+  dayOfWeek Int // 0 = Sunday, 1 = Monday, etc.
+  startTime String // HH:MM format
+  endTime   String // HH:MM format
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("availabilities")
+}
+
+model Booking {
+  id       String @id @default(cuid())
+  clientId String
+  client   User   @relation(fields: [clientId], references: [id])
+
+  providerId String
+  provider   ProviderProfile @relation(fields: [providerId], references: [id])
+
+  serviceId String
+  service   ProviderService @relation(fields: [serviceId], references: [id])
+
+  // Booking details
+  title       String
+  description String?
+  scheduledAt DateTime
+  address     String
+
+  // Pricing
+  agreedPrice Float?
+
+  // Status
+  status BookingStatus @default(PENDING)
+
+  // Communication
+  clientPhone   String?
+  providerPhone String?
+  whatsappLink  String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  messages Message[]
+  review   Review?
+
+  @@map("bookings")
+}
+
+model Message {
+  id        String  @id @default(cuid())
+  bookingId String
+  booking   Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+
+  senderId String
+  sender   User   @relation("MessageSender", fields: [senderId], references: [id])
+
+  receiverId String
+  receiver   User   @relation("MessageReceiver", fields: [receiverId], references: [id])
+
+  content String
+  type    MessageType @default(TEXT) // TEXT, IMAGE, LOCATION
+
+  readAt DateTime?
+
+  createdAt DateTime @default(now())
+
+  @@map("messages")
+}
+
+model Review {
+  id        String  @id @default(cuid())
+  bookingId String  @unique
+  booking   Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+
+  reviewerId String
+  reviewer   User   @relation(fields: [reviewerId], references: [id])
+
+  providerId String
+  provider   ProviderProfile @relation("ProviderReviews", fields: [providerId], references: [id])
+
+  rating  Int // 1-5 stars
+  comment String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("reviews")
+}
+
+model Subscription {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  price       Float
+  duration    Int // days
+  features    String // JSON string of features
+
+  // Limits
+  maxServices       Int?
+  maxPortfolioItems Int?
+  prioritySupport   Boolean @default(false)
+  verifiedBadge     Boolean @default(false)
+
+  active Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  providers ProviderProfile[]
+
+  @@map("subscriptions")
+}
+
+model WhatsAppIntegration {
+  id         String          @id @default(cuid())
+  providerId String          @unique
+  provider   ProviderProfile @relation(fields: [providerId], references: [id], onDelete: Cascade)
+
+  phoneNumber String
+  apiKey      String?
+  webhookUrl  String?
+  active      Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("whatsapp_integrations")
+}
+
+model Post {
+  id          String @id @default(cuid())
+  authorId    String
+  author      User   @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  title       String
+  content     String?
+  images      String? // JSON string of image URLs
+  serviceType String?
+  location    String?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  comments  Comment[]
+  postLikes PostLike[]
+
+  @@map("posts")
+}
+
+model Comment {
+  id      String @id @default(cuid())
+  postId  String
+  post    Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+  
+  authorId String
+  author   User   @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  
+  content String
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("comments")
+}
+
+model PostLike {
+  id     String @id @default(cuid())
+  postId String
+  post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+  
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  createdAt DateTime @default(now())
+
+  @@unique([postId, userId])
+  @@map("post_likes")
+}
+
+model Follow {
+  id          String @id @default(cuid())
+  followerId  String
+  follower    User   @relation("UserFollowing", fields: [followerId], references: [id], onDelete: Cascade)
+  
+  followingId String
+  following   User   @relation("UserFollowers", fields: [followingId], references: [id], onDelete: Cascade)
+  
+  createdAt DateTime @default(now())
+
+  @@unique([followerId, followingId])
+  @@map("follows")
+}
+
+// Enums
+enum PriceType {
+  FIXED
+  HOURLY
+  DAILY
+  NEGOTIABLE
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+  DISPUTED
+}
+
+enum MessageType {
+  TEXT
+  IMAGE
+  LOCATION
+  CONTACT
+}
+
+enum UserType {
+  CLIENT
+  PROVIDER
+}

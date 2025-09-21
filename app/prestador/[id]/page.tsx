@@ -128,6 +128,23 @@ export default function ProviderProfilePage() {
                   )}
                 </div>
 
+                <p className="text-sm text-primary font-medium mb-2">
+                  {(() => {
+                    if (Array.isArray(provider.serviceAreas)) {
+                      return provider.serviceAreas.join(', ')
+                    }
+                    try {
+                      const arr = JSON.parse(provider.serviceAreas || '[]')
+                      if (Array.isArray(arr) && arr.length > 0) return arr.join(', ')
+                    } catch {}
+                    // Fallback to first service category name if no areas
+                    if (provider.services && provider.services.length > 0) {
+                      return provider.services.map((s: any) => s.category?.name).filter(Boolean).join(', ')
+                    }
+                    return 'Prestador'
+                  })()}
+                </p>
+
                 <div className="space-y-2 mb-6">
                   <div className="flex items-center justify-center md:justify-start gap-2">
                     <Star className="w-5 h-5 text-yellow-400 fill-current" />
@@ -138,7 +155,15 @@ export default function ProviderProfilePage() {
                   <div className="flex items-center justify-center md:justify-start gap-2">
                     <MapPin className="w-5 h-5 text-muted-foreground" />
                     <span>
-                      {provider.city}, {provider.state}
+                      {(() => {
+                        try {
+                          const cities = JSON.parse(provider.serviceCities || '[]')
+                          if (Array.isArray(cities) && cities.length > 0) {
+                            return `Atende: ${cities.join(', ')}`
+                          }
+                        } catch {}
+                        return [provider.city, provider.state].filter(Boolean).join(', ')
+                      })()}
                     </span>
                   </div>
 
@@ -150,13 +175,7 @@ export default function ProviderProfilePage() {
 
                 <p className="text-muted-foreground mb-6">{provider.description}</p>
 
-                <div className="flex flex-wrap gap-2 mb-6 justify-center md:justify-start">
-                  {provider.services?.map((service: any) => (
-                    <Badge key={service.id} variant="outline">
-                      {service.category.name}
-                    </Badge>
-                  ))}
-                </div>
+                {/* Areas already shown above as comma-separated text */}
 
                 <div className="flex flex-col sm:flex-row gap-3 justify-center md:justify-start">
                   <Button onClick={handleContact}>

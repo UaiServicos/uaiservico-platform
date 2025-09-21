@@ -57,8 +57,8 @@ export default function DashboardPage() {
     try {
       setLoading(true)
       const params = new URLSearchParams()
-      if (selectedCity) params.append('city', selectedCity)
-      if (selectedCategory !== 'all') params.append('category', selectedCategory)
+      if (selectedCity && selectedCity !== 'todas') params.append('city', selectedCity)
+      if (selectedCategory && selectedCategory !== 'all') params.append('serviceArea', selectedCategory)
       
       const response = await fetch(`/api/providers?${params}`)
       if (response.ok) {
@@ -127,19 +127,37 @@ export default function DashboardPage() {
 
   const filteredProviders = providers.filter((provider) => {
     const providerName = provider.user?.name || ''
-    const providerService = provider.services?.[0]?.category?.name || ''
-    const providerLocation = `${provider.city}, ${provider.state}`
+    // Parse serviceAreas and serviceCities from JSON strings if present
+    const parseJsonArray = (value: any) => {
+      if (!value) return [] as string[]
+      if (Array.isArray(value)) return value as string[]
+      try {
+        const parsed = JSON.parse(value)
+        return Array.isArray(parsed) ? parsed : []
+      } catch {
+        return [] as string[]
+      }
+    }
+    const serviceAreas: string[] = parseJsonArray(provider.serviceAreas)
+    const serviceCities: string[] = parseJsonArray(provider.serviceCities)
+    const providerService = serviceAreas.join(', ') || provider.services?.[0]?.category?.name || ''
+    const baseLocation = [provider.city, provider.state].filter(Boolean).join(', ')
+    const providerLocation = serviceCities.length > 0 ? `Atende: ${serviceCities.join(', ')}` : baseLocation
     
     const matchesSearch = 
       providerName.toLowerCase().includes(searchQuery.toLowerCase()) ||
       providerService.toLowerCase().includes(searchQuery.toLowerCase()) ||
       providerLocation.toLowerCase().includes(searchQuery.toLowerCase())
     
-    const matchesCategory = selectedCategory === "all" || 
-      providerService.toLowerCase().includes(selectedCategory.toLowerCase())
+    const matchesCategory = selectedCategory === "all" ||
+      (serviceAreas.length > 0
+        ? serviceAreas.some((a) => a.toLowerCase().includes(selectedCategory.toLowerCase()))
+        : (provider.services?.[0]?.category?.name || '').toLowerCase().includes(selectedCategory.toLowerCase()))
     
-    const matchesCity = selectedCity === "" || selectedCity === "todas" || 
-      provider.city.toLowerCase().includes(selectedCity.toLowerCase())
+    const matchesCity = selectedCity === "" || selectedCity === "todas" ||
+      (serviceCities.length > 0
+        ? serviceCities.some((c) => c.toLowerCase().includes(selectedCity.toLowerCase()))
+        : (provider.city || '').toLowerCase().includes(selectedCity.toLowerCase()))
     
     return matchesSearch && matchesCategory && matchesCity
   })
@@ -276,7 +294,22 @@ export default function DashboardPage() {
                         <div>
                           <h3 className="font-semibold">{provider.user?.name}</h3>
                           <p className="text-sm text-primary font-medium">
-                            {provider.services?.[0]?.category?.name || 'Prestador'}
+                            {(() => {
+                              const toArray = () => {
+                                if (Array.isArray(provider.serviceAreas)) return provider.serviceAreas
+                                try {
+                                  const arr = JSON.parse(provider.serviceAreas || '[]')
+                                  return Array.isArray(arr) ? arr : []
+                                } catch {
+                                  return []
+                                }
+                              }
+                              const formatArea = (s: string) => s.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())
+                              const areas = toArray()
+                              return (areas.length > 0
+                                ? areas.map(formatArea).join(', ')
+                                : (provider.services?.[0]?.category?.name || 'Prestador'))
+                            })()}
                           </p>
                         </div>
                       </div>
@@ -288,7 +321,15 @@ export default function DashboardPage() {
                       <div className="flex items-center gap-2 mb-3">
                         <MapPin className="w-4 h-4 text-muted-foreground" />
                         <span className="text-sm text-muted-foreground">
-                          {provider.city}, {provider.state}
+                          {(() => {
+                            try {
+                              const cities = JSON.parse(provider.serviceCities || '[]')
+                              if (Array.isArray(cities) && cities.length > 0) {
+                                return `Atende: ${cities.join(', ')}`
+                              }
+                            } catch {}
+                            return [provider.city, provider.state].filter(Boolean).join(', ')
+                          })()}
                         </span>
                       </div>
 

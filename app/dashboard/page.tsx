@@ -13,16 +13,45 @@ import { toast } from "sonner"
 import { Star, Phone, MapPin, User, LogIn } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { DashboardHeader } from "@/components/dashboard-header"
+import { RatingModal } from "@/components/rating-modal"
+import { useRating } from "@/hooks/use-rating"
 import { AvatarUpload } from "@/components/avatar-upload"
 import { useAuth } from "@/hooks/use-auth"
 
 export default function DashboardPage() {
   const router = useRouter()
   const { user, loading: authLoading, logout } = useAuth()
+  const { pendingRatings, markContactAsMade, removePendingRating } = useRating()
   const [activeTab, setActiveTab] = useState("inicio")
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedCategory, setSelectedCategory] = useState("all")
   const [selectedCity, setSelectedCity] = useState("todas")
+  const [ratingModal, setRatingModal] = useState<{
+    isOpen: boolean
+    providerId: string
+    providerName: string
+  }>({
+    isOpen: false,
+    providerId: '',
+    providerName: ''
+  })
+
+  // Função para formatar texto (primeira letra maiúscula e sem hífens)
+  const formatText = (text: string) => {
+    return text
+      .split('-')
+      .map((word, index, arr) => {
+        // Se for a segunda parte (sigla do estado), manter em maiúsculas
+        if (word.length === 2 && index === arr.length - 1) {
+          return word.toUpperCase(); // Sigla do estado (2 letras)
+        }
+        // Caso contrário, capitalizar a cidade (primeira letra maiúscula)
+        return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+      })
+      .join(' ');
+  };
+  
+  
   const [profileData, setProfileData] = useState({
     name: "",
     email: "",
@@ -48,6 +77,22 @@ export default function DashboardPage() {
     }
     loadProviders()
   }, [user])
+
+  // Mostrar modal de avaliação quando há avaliações pendentes
+  useEffect(() => {
+    if (pendingRatings.length > 0 && user?.userType === 'CLIENT') {
+      const firstPending = pendingRatings[0]
+      // Buscar nome do prestador
+      const provider = providers.find(p => p.id === firstPending.providerId)
+      if (provider) {
+        setRatingModal({
+          isOpen: true,
+          providerId: firstPending.providerId,
+          providerName: provider.user?.name || 'Prestador'
+        })
+      }
+    }
+  }, [pendingRatings, providers, user])
 
   useEffect(() => {
     loadProviders()
@@ -128,33 +173,67 @@ export default function DashboardPage() {
   const filteredProviders = providers.filter((provider) => {
     const providerName = provider.user?.name || ''
     const providerService = provider.services?.[0]?.category?.name || ''
-    const providerLocation = `${provider.city}, ${provider.state}`
+    
+    // Verificar cidades que atende
+    const serviceCities = (() => {
+      try {
+        const parsed = provider.serviceCities ? JSON.parse(provider.serviceCities) : []
+        return Array.isArray(parsed) ? parsed : []
+      } catch { return [] }
+    })()
+    
+    // Verificar áreas de serviço
+    const serviceAreas = (() => {
+      try {
+        const parsed = provider.serviceAreas ? JSON.parse(provider.serviceAreas) : []
+        return Array.isArray(parsed) ? parsed : []
+      } catch { return [] }
+    })()
+    
     
     const matchesSearch = 
       providerName.toLowerCase().includes(searchQuery.toLowerCase()) ||
       providerService.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      providerLocation.toLowerCase().includes(searchQuery.toLowerCase())
+      serviceCities.some((city: string) => city.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      serviceAreas.some((area: string) => area.toLowerCase().includes(searchQuery.toLowerCase()))
     
     const matchesCategory = selectedCategory === "all" || 
+      serviceAreas.some((area: string) => area.toLowerCase().includes(selectedCategory.toLowerCase())) ||
       providerService.toLowerCase().includes(selectedCategory.toLowerCase())
     
     const matchesCity = selectedCity === "" || selectedCity === "todas" || 
-      provider.city.toLowerCase().includes(selectedCity.toLowerCase())
+      serviceCities.some((city: string) => city.toLowerCase().includes(selectedCity.toLowerCase())) ||
+      (provider.city && provider.city.toLowerCase().includes(selectedCity.toLowerCase()))
     
     return matchesSearch && matchesCategory && matchesCity
   })
 
-  const handleContact = (provider: any) => {
+  const handleContact = async (provider: any) => {
     if (!user) {
       toast.error("Faça login para contactar um prestador")
       router.push("/login")
       return
     }
+    
     const providerName = provider.user?.name || 'Prestador'
     const providerPhone = provider.user?.phone || ''
     const message = `Olá ${providerName}! Vi seu perfil no UaiServiço e gostaria de conversar sobre seus serviços.`
     const whatsappUrl = `https://wa.me/55${providerPhone.replace(/\D/g, '')}?text=${encodeURIComponent(message)}`
+    
+    // Registrar contato
+    await markContactAsMade(provider.id)
+    
+    // Abrir WhatsApp
     window.open(whatsappUrl, '_blank')
+    
+    // Abrir modal de avaliação imediatamente
+    setRatingModal({
+      isOpen: true,
+      providerId: provider.id,
+      providerName: providerName
+    })
+    
+    toast.success("Contato registrado! Por favor, avalie este prestador.")
   }
 
   const handleViewProfile = (provider: any) => {
@@ -275,9 +354,27 @@ export default function DashboardPage() {
                         </Avatar>
                         <div>
                           <h3 className="font-semibold">{provider.user?.name}</h3>
-                          <p className="text-sm text-primary font-medium">
-                            {provider.services?.[0]?.category?.name || 'Prestador'}
-                          </p>
+                          {/* Áreas de Atuação abaixo do nome */}
+                          {(() => {
+                            try {
+                              const areas = provider.serviceAreas ? JSON.parse(provider.serviceAreas) : []
+                              return areas.length > 0 ? (
+                                <p className="text-sm text-muted-foreground">
+                                  {areas.map((area: string) => formatText(area)).join(', ')}
+                                </p>
+                              ) : (
+                                <p className="text-sm text-primary font-medium">
+                                  {provider.services?.[0]?.category?.name || 'Prestador'}
+                                </p>
+                              )
+                            } catch { 
+                              return (
+                                <p className="text-sm text-primary font-medium">
+                                  {provider.services?.[0]?.category?.name || 'Prestador'}
+                                </p>
+                              )
+                            }
+                          })()}
                         </div>
                       </div>
 
@@ -285,11 +382,20 @@ export default function DashboardPage() {
                         {provider.description || 'Prestador de serviços qualificado'}
                       </p>
 
-                      <div className="flex items-center gap-2 mb-3">
-                        <MapPin className="w-4 h-4 text-muted-foreground" />
-                        <span className="text-sm text-muted-foreground">
-                          {provider.city}, {provider.state}
-                        </span>
+                      <div className="space-y-2 mb-3">
+                        <div className="flex items-center gap-2">
+                          <MapPin className="w-4 h-4 text-muted-foreground" />
+                          <span className="text-sm text-muted-foreground">
+                            {(() => {
+                              try {
+                                const cities = provider.serviceCities ? JSON.parse(provider.serviceCities) : []
+                                return cities.length > 0 ? cities.map((city: string) => formatText(city)).join(', ') : (provider.city ? `${provider.city}, ${provider.state}` : 'Localização não informada')
+                              } catch { 
+                                return provider.city ? `${provider.city}, ${provider.state}` : 'Localização não informada'
+                              }
+                            })()}
+                          </span>
+                        </div>
                       </div>
 
                       <div className="flex items-center justify-between mb-4">
@@ -301,8 +407,8 @@ export default function DashboardPage() {
                           </span>
                         </div>
                         <span className="font-semibold text-primary">
-                          R$ {provider.dailyRate || provider.hourlyRate || 100}
-                          {provider.dailyRate ? '/dia' : '/hora'}
+                          R$ {provider.averageJobValue || provider.averageJobValue || 100}
+                          {provider.averageJobValueUnit ? ('/' + (provider.averageJobValueUnit === 'hour' ? 'hora' : 'dia')) : ''}
                         </span>
                       </div>
 
@@ -451,6 +557,22 @@ export default function DashboardPage() {
 
         </Tabs>
       </div>
+
+      {/* Modal de Avaliação */}
+      <RatingModal
+        isOpen={ratingModal.isOpen}
+        onClose={() => {
+          setRatingModal(prev => ({ ...prev, isOpen: false }))
+          removePendingRating(ratingModal.providerId)
+        }}
+        providerName={ratingModal.providerName}
+        providerId={ratingModal.providerId}
+        onRatingSubmitted={() => {
+          removePendingRating(ratingModal.providerId)
+          // Recarregar providers para atualizar ratings
+          loadProviders()
+        }}
+      />
     </div>
   )
 }

@@ -3,11 +3,11 @@ import { prisma } from '@/lib/prisma'
 import jwt from 'jsonwebtoken'
 
 function getUserFromToken(request: NextRequest) {
-  const token = request.cookies.get('auth-token')?.value
+  const token = request.cookies.get('token')?.value
   if (!token) return null
   
   try {
-    return jwt.verify(token, process.env.NEXTAUTH_SECRET || 'fallback-secret') as { userId: string }
+    return jwt.verify(token, 'fallback-secret-key') as { userId: string }
   } catch {
     return null
   }

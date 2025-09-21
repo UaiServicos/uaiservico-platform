@@ -1,3 +1,6 @@
+"use client"
+
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -6,10 +9,98 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Badge } from "@/components/ui/badge"
-import { CheckCircle, Star, Users, Clock, Shield, ArrowLeft } from "lucide-react"
+import { CheckCircle, Star, Users, Clock, Shield, ArrowLeft, CreditCard, Smartphone } from "lucide-react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
+import { toast } from "sonner"
 
 export default function CadastroPrestadorPage() {
+  const router = useRouter()
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    password: "",
+    confirmPassword: "",
+    city: "",
+    state: "",
+    neighborhood: "",
+    serviceType: "",
+    experience: "",
+    description: "",
+    price: "",
+    paymentMethod: "",
+    acceptTerms: false
+  })
+  const [loading, setLoading] = useState(false)
+
+  const handleInputChange = (field: string, value: string | boolean) => {
+    setFormData(prev => ({ ...prev, [field]: value }))
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    
+    // Validações
+    if (!formData.name || !formData.email || !formData.phone || !formData.password || 
+        !formData.city || !formData.state || !formData.serviceType || !formData.paymentMethod) {
+      toast.error("Por favor, preencha todos os campos obrigatórios")
+      return
+    }
+
+    if (formData.password !== formData.confirmPassword) {
+      toast.error("As senhas não coincidem")
+      return
+    }
+
+    if (formData.password.length < 6) {
+      toast.error("A senha deve ter pelo menos 6 caracteres")
+      return
+    }
+
+    if (!formData.acceptTerms) {
+      toast.error("Você deve aceitar os termos de uso")
+      return
+    }
+
+    setLoading(true)
+    try {
+      const response = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          password: formData.password,
+          userType: 'PROVIDER',
+          city: formData.city,
+          state: formData.state,
+          neighborhood: formData.neighborhood,
+          serviceType: formData.serviceType,
+          experience: formData.experience,
+          description: formData.description,
+          price: formData.price,
+          paymentMethod: formData.paymentMethod
+        }),
+      })
+
+      if (response.ok) {
+        toast.success("Conta criada com sucesso! Faça login para continuar.")
+        router.push('/login')
+      } else {
+        const error = await response.json()
+        toast.error(error.error || "Erro ao criar conta")
+      }
+    } catch (error) {
+      console.error('Error creating account:', error)
+      toast.error("Erro ao criar conta. Tente novamente.")
+    } finally {
+      setLoading(false)
+    }
+  }
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -73,115 +164,274 @@ export default function CadastroPrestadorPage() {
                   <CardTitle>Informações Pessoais</CardTitle>
                   <CardDescription>Preencha seus dados para criar seu perfil profissional</CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-6">
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="nome">Nome Completo *</Label>
-                      <Input id="nome" placeholder="Seu nome completo" />
+                <CardContent>
+                  <form onSubmit={handleSubmit} className="space-y-6">
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="nome">Nome Completo *</Label>
+                        <Input 
+                          id="nome" 
+                          placeholder="Seu nome completo" 
+                          value={formData.name}
+                          onChange={(e) => handleInputChange('name', e.target.value)}
+                          required
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="telefone">Telefone/WhatsApp *</Label>
+                        <Input 
+                          id="telefone" 
+                          placeholder="(31) 99999-9999" 
+                          value={formData.phone}
+                          onChange={(e) => handleInputChange('phone', e.target.value)}
+                          required
+                        />
+                      </div>
                     </div>
+
                     <div className="space-y-2">
-                      <Label htmlFor="telefone">Telefone/WhatsApp *</Label>
-                      <Input id="telefone" placeholder="(31) 99999-9999" />
+                      <Label htmlFor="email">E-mail *</Label>
+                      <Input 
+                        id="email" 
+                        type="email" 
+                        placeholder="seu@email.com" 
+                        value={formData.email}
+                        onChange={(e) => handleInputChange('email', e.target.value)}
+                        required
+                      />
                     </div>
-                  </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="email">E-mail *</Label>
-                    <Input id="email" type="email" placeholder="seu@email.com" />
-                  </div>
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="senha">Senha *</Label>
+                        <Input 
+                          id="senha" 
+                          type="password" 
+                          placeholder="Mínimo 6 caracteres" 
+                          value={formData.password}
+                          onChange={(e) => handleInputChange('password', e.target.value)}
+                          required
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="confirmar-senha">Confirmar Senha *</Label>
+                        <Input 
+                          id="confirmar-senha" 
+                          type="password" 
+                          placeholder="Confirme sua senha" 
+                          value={formData.confirmPassword}
+                          onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
+                          required
+                        />
+                      </div>
+                    </div>
 
-                  <div className="grid md:grid-cols-2 gap-4">
+                    <div className="grid md:grid-cols-3 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="estado">Estado *</Label>
+                        <Select value={formData.state} onValueChange={(value) => handleInputChange('state', value)}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Selecione o estado" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="MG">Minas Gerais</SelectItem>
+                            <SelectItem value="SP">São Paulo</SelectItem>
+                            <SelectItem value="RJ">Rio de Janeiro</SelectItem>
+                            <SelectItem value="ES">Espírito Santo</SelectItem>
+                            <SelectItem value="BA">Bahia</SelectItem>
+                            <SelectItem value="GO">Goiás</SelectItem>
+                            <SelectItem value="DF">Distrito Federal</SelectItem>
+                            <SelectItem value="RS">Rio Grande do Sul</SelectItem>
+                            <SelectItem value="PR">Paraná</SelectItem>
+                            <SelectItem value="SC">Santa Catarina</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="cidade">Cidade *</Label>
+                        <Input 
+                          id="cidade" 
+                          placeholder="Sua cidade" 
+                          value={formData.city}
+                          onChange={(e) => handleInputChange('city', e.target.value)}
+                          required
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="bairro">Bairro</Label>
+                        <Input 
+                          id="bairro" 
+                          placeholder="Seu bairro" 
+                          value={formData.neighborhood}
+                          onChange={(e) => handleInputChange('neighborhood', e.target.value)}
+                        />
+                      </div>
+                    </div>
+
                     <div className="space-y-2">
-                      <Label htmlFor="cidade">Cidade *</Label>
-                      <Select>
+                      <Label htmlFor="servicos">Serviços que Oferece *</Label>
+                      <Select value={formData.serviceType} onValueChange={(value) => handleInputChange('serviceType', value)}>
                         <SelectTrigger>
-                          <SelectValue placeholder="Selecione sua cidade" />
+                          <SelectValue placeholder="Selecione seu principal serviço" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="belo-horizonte">Belo Horizonte</SelectItem>
-                          <SelectItem value="contagem">Contagem</SelectItem>
-                          <SelectItem value="betim">Betim</SelectItem>
-                          <SelectItem value="nova-lima">Nova Lima</SelectItem>
-                          <SelectItem value="ribeirao-das-neves">Ribeirão das Neves</SelectItem>
+                          <SelectItem value="eletrica">Elétrica</SelectItem>
+                          <SelectItem value="encanamento">Encanamento</SelectItem>
+                          <SelectItem value="construcao">Construção</SelectItem>
+                          <SelectItem value="jardinagem">Jardinagem</SelectItem>
+                          <SelectItem value="limpeza">Limpeza</SelectItem>
+                          <SelectItem value="reformas">Reformas</SelectItem>
+                          <SelectItem value="pintura">Pintura</SelectItem>
+                          <SelectItem value="montagem-de-moveis">Montagem de Móveis</SelectItem>
+                          <SelectItem value="ar-condicionado">Ar Condicionado</SelectItem>
+                          <SelectItem value="eletrodomesticos">Eletrodomésticos</SelectItem>
+                          <SelectItem value="seguranca-eletronica">Segurança Eletrônica</SelectItem>
+                          <SelectItem value="pisos-e-revestimentos">Pisos e Revestimentos</SelectItem>
+                          <SelectItem value="gesso-e-drywall">Gesso e Drywall</SelectItem>
+                          <SelectItem value="telhados">Telhados</SelectItem>
+                          <SelectItem value="impermeabilizacao">Impermeabilização</SelectItem>
+                          <SelectItem value="vidracaria">Vidraçaria</SelectItem>
+                          <SelectItem value="serralheria">Serralheria</SelectItem>
+                          <SelectItem value="marcenaria">Marcenaria</SelectItem>
+                          <SelectItem value="desentupimento">Desentupimento</SelectItem>
+                          <SelectItem value="dedetizacao">Dedetização</SelectItem>
+                          <SelectItem value="pequenos-reparos">Pequenos Reparos</SelectItem>
+                          <SelectItem value="chaveiro">Chaveiro</SelectItem>
+                          <SelectItem value="mudancas-e-carretos">Mudanças e Carretos</SelectItem>
+                          <SelectItem value="fretes">Fretes</SelectItem>
+                          <SelectItem value="diarista">Diarista</SelectItem>
+                          <SelectItem value="passadeira">Passadeira</SelectItem>
+                          <SelectItem value="cozinheira">Cozinheira</SelectItem>
+                          <SelectItem value="baba">Babá</SelectItem>
+                          <SelectItem value="cuidador-de-idosos">Cuidador de Idosos</SelectItem>
+                          <SelectItem value="aulas-particulares">Aulas Particulares</SelectItem>
+                          <SelectItem value="informatica">Informática</SelectItem>
+                          <SelectItem value="design-grafico">Design Gráfico</SelectItem>
+                          <SelectItem value="marketing-digital">Marketing Digital</SelectItem>
+                          <SelectItem value="fotografia">Fotografia</SelectItem>
+                          <SelectItem value="video">Vídeo</SelectItem>
+                          <SelectItem value="eventos">Eventos</SelectItem>
+                          <SelectItem value="buffet">Buffet</SelectItem>
+                          <SelectItem value="garcom">Garçom</SelectItem>
+                          <SelectItem value="seguranca">Segurança</SelectItem>
+                          <SelectItem value="motorista">Motorista</SelectItem>
+                          <SelectItem value="consultoria">Consultoria</SelectItem>
+                          <SelectItem value="contabilidade">Contabilidade</SelectItem>
+                          <SelectItem value="juridico">Jurídico</SelectItem>
+                          <SelectItem value="saude">Saúde</SelectItem>
+                          <SelectItem value="beleza">Beleza</SelectItem>
+                          <SelectItem value="estetica">Estética</SelectItem>
+                          <SelectItem value="massagem">Massagem</SelectItem>
+                          <SelectItem value="personal-trainer">Personal Trainer</SelectItem>
+                          <SelectItem value="pet-sitter">Pet Sitter</SelectItem>
+                          <SelectItem value="adestramento">Adestramento</SelectItem>
+                          <SelectItem value="veterinario">Veterinário</SelectItem>
+                          <SelectItem value="costura">Costura</SelectItem>
+                          <SelectItem value="bordado">Bordado</SelectItem>
+                          <SelectItem value="artesanato">Artesanato</SelectItem>
+                          <SelectItem value="outros">Outros</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
+
                     <div className="space-y-2">
-                      <Label htmlFor="bairro">Bairro</Label>
-                      <Input id="bairro" placeholder="Seu bairro" />
+                      <Label htmlFor="experiencia">Anos de Experiência</Label>
+                      <Select value={formData.experience} onValueChange={(value) => handleInputChange('experience', value)}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione sua experiência" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="1-2">1-2 anos</SelectItem>
+                          <SelectItem value="3-5">3-5 anos</SelectItem>
+                          <SelectItem value="6-10">6-10 anos</SelectItem>
+                          <SelectItem value="10+">Mais de 10 anos</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
-                  </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="servicos">Serviços que Oferece *</Label>
-                    <Select>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecione seu principal serviço" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="pedreiro">Pedreiro</SelectItem>
-                        <SelectItem value="encanador">Encanador</SelectItem>
-                        <SelectItem value="eletricista">Eletricista</SelectItem>
-                        <SelectItem value="diarista">Diarista</SelectItem>
-                        <SelectItem value="pintor">Pintor</SelectItem>
-                        <SelectItem value="jardineiro">Jardineiro</SelectItem>
-                        <SelectItem value="marceneiro">Marceneiro</SelectItem>
-                        <SelectItem value="mecanico">Mecânico</SelectItem>
-                        <SelectItem value="costureira">Costureira</SelectItem>
-                        <SelectItem value="cozinheira">Cozinheira</SelectItem>
-                        <SelectItem value="baba">Babá</SelectItem>
-                        <SelectItem value="pet-sitter">Pet Sitter</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="descricao">Descrição do seu Trabalho</Label>
+                      <Textarea
+                        id="descricao"
+                        placeholder="Conte um pouco sobre sua experiência, especialidades e diferenciais..."
+                        rows={4}
+                        value={formData.description}
+                        onChange={(e) => handleInputChange('description', e.target.value)}
+                      />
+                    </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="experiencia">Anos de Experiência</Label>
-                    <Select>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecione sua experiência" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="1-2">1-2 anos</SelectItem>
-                        <SelectItem value="3-5">3-5 anos</SelectItem>
-                        <SelectItem value="6-10">6-10 anos</SelectItem>
-                        <SelectItem value="10+">Mais de 10 anos</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="preco">Preço Médio dos Seus Serviços</Label>
+                      <Input 
+                        id="preco" 
+                        placeholder="Ex: R$ 100/dia ou R$ 50/hora" 
+                        value={formData.price}
+                        onChange={(e) => handleInputChange('price', e.target.value)}
+                      />
+                    </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="descricao">Descrição do seu Trabalho</Label>
-                    <Textarea
-                      id="descricao"
-                      placeholder="Conte um pouco sobre sua experiência, especialidades e diferenciais..."
-                      rows={4}
-                    />
-                  </div>
+                    {/* Forma de Pagamento */}
+                    <div className="space-y-2">
+                      <Label htmlFor="pagamento">Forma de Pagamento *</Label>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div 
+                          className={`border-2 rounded-lg p-4 cursor-pointer transition-colors ${
+                            formData.paymentMethod === 'pix' 
+                              ? 'border-primary bg-primary/5' 
+                              : 'border-muted hover:border-primary/50'
+                          }`}
+                          onClick={() => handleInputChange('paymentMethod', 'pix')}
+                        >
+                          <div className="flex items-center space-x-3">
+                            <Smartphone className="w-6 h-6 text-primary" />
+                            <div>
+                              <p className="font-medium">PIX</p>
+                              <p className="text-sm text-muted-foreground">Pagamento instantâneo</p>
+                            </div>
+                          </div>
+                        </div>
+                        <div 
+                          className={`border-2 rounded-lg p-4 cursor-pointer transition-colors ${
+                            formData.paymentMethod === 'cartao' 
+                              ? 'border-primary bg-primary/5' 
+                              : 'border-muted hover:border-primary/50'
+                          }`}
+                          onClick={() => handleInputChange('paymentMethod', 'cartao')}
+                        >
+                          <div className="flex items-center space-x-3">
+                            <CreditCard className="w-6 h-6 text-primary" />
+                            <div>
+                              <p className="font-medium">Cartão</p>
+                              <p className="text-sm text-muted-foreground">Crédito ou débito</p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="preco">Preço Médio dos Seus Serviços</Label>
-                    <Input id="preco" placeholder="Ex: R$ 100/dia ou R$ 50/hora" />
-                  </div>
+                    <div className="flex items-center space-x-2">
+                      <Checkbox 
+                        id="termos" 
+                        checked={formData.acceptTerms}
+                        onCheckedChange={(checked) => handleInputChange('acceptTerms', checked as boolean)}
+                      />
+                      <Label htmlFor="termos" className="text-sm">
+                        Aceito os{" "}
+                        <Link href="#" className="text-primary hover:underline">
+                          termos de uso
+                        </Link>{" "}
+                        e
+                        <Link href="#" className="text-primary hover:underline">
+                          {" "}
+                          política de privacidade
+                        </Link>
+                      </Label>
+                    </div>
 
-                  <div className="flex items-center space-x-2">
-                    <Checkbox id="termos" />
-                    <Label htmlFor="termos" className="text-sm">
-                      Aceito os{" "}
-                      <Link href="#" className="text-primary hover:underline">
-                        termos de uso
-                      </Link>{" "}
-                      e
-                      <Link href="#" className="text-primary hover:underline">
-                        {" "}
-                        política de privacidade
-                      </Link>
-                    </Label>
-                  </div>
-
-                  <Button size="lg" className="w-full">
-                    Criar Minha Conta - Grátis por 30 dias
-                  </Button>
+                    <Button size="lg" className="w-full" type="submit" disabled={loading}>
+                      {loading ? "Criando conta..." : "Criar Minha Conta - Grátis por 30 dias"}
+                    </Button>
+                  </form>
                 </CardContent>
               </Card>
             </div>

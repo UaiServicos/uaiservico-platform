@@ -39,10 +39,10 @@ export async function POST(request: NextRequest) {
               description: profileData.description,
               city: profileData.city,
               state: profileData.state,
-              address: profileData.address,
-              zipCode: profileData.zipCode,
-              businessName: profileData.businessName,
-              document: profileData.document
+              address: profileData.neighborhood,
+              experience: profileData.experience ? parseInt(profileData.experience.split('-')[0]) : null,
+              hourlyRate: profileData.price ? parseFloat(profileData.price.replace(/[^\d.,]/g, '').replace(',', '.')) : null,
+              dailyRate: profileData.price ? parseFloat(profileData.price.replace(/[^\d.,]/g, '').replace(',', '.')) : null
             }
           }
         })
@@ -52,6 +52,36 @@ export async function POST(request: NextRequest) {
         providerProfile: true
       }
     })
+
+    // Se for prestador, criar o serviço principal
+    if (userType === 'PROVIDER' && profileData.serviceType) {
+      // Buscar ou criar categoria de serviço
+      let category = await prisma.serviceCategory.findFirst({
+        where: { name: profileData.serviceType }
+      })
+
+      if (!category) {
+        category = await prisma.serviceCategory.create({
+          data: {
+            name: profileData.serviceType,
+            slug: profileData.serviceType.toLowerCase().replace(/\s+/g, '-'),
+            description: `Categoria de ${profileData.serviceType}`
+          }
+        })
+      }
+
+      // Criar serviço do prestador
+      await prisma.providerService.create({
+        data: {
+          providerId: user.providerProfile.id,
+          categoryId: category.id,
+          name: profileData.serviceType,
+          description: profileData.description || `Serviços de ${profileData.serviceType}`,
+          price: profileData.price ? parseFloat(profileData.price.replace(/[^\d.,]/g, '').replace(',', '.')) : null,
+          active: true
+        }
+      })
+    }
 
     const { password: _, ...userWithoutPassword } = user
     return NextResponse.json({ user: userWithoutPassword })

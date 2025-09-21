@@ -83,7 +83,7 @@ export default function LoginPage() {
     <div className="min-h-screen bg-background">
       <header className="border-b bg-card/50 backdrop-blur-sm">
         <div className="container mx-auto px-4 py-4">
-          <Link href="/dashboard" className="flex items-center space-x-2">
+          <Link href="/" className="flex items-center space-x-2">
             <ArrowLeft className="w-5 h-5" />
             <div className="flex items-center space-x-2">
               <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
@@ -174,7 +174,7 @@ export default function LoginPage() {
 
               <div className="text-center">
                 <Button variant="ghost" asChild>
-                  <Link href="/dashboard" className="text-sm">
+                  <Link href="/" className="text-sm">
                     Continuar sem login
                   </Link>
                 </Button>

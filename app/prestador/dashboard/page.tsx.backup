@@ -11,7 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { toast } from 'sonner'
-import { Plus, Edit, Star, MapPin, Calendar, LogOut, Settings, Camera, Trash2, GraduationCap, Briefcase, DollarSign, FileText, ExternalLink, Download } from 'lucide-react'
+import { Plus, Edit, Star, MapPin, Calendar, LogOut, Settings, Camera, Trash2, GraduationCap, Briefcase, DollarSign } from 'lucide-react'
 import { ImageUpload } from '@/components/image-upload'
 import { AvatarUpload } from '@/components/avatar-upload'
 import { CitySelector } from '@/components/city-selector'
@@ -107,11 +107,7 @@ export default function PrestadorDashboard() {
         totalJobs: user.providerProfile?.totalJobs?.toString() || '',
         averageJobValue: user.providerProfile?.averageJobValue?.toString() || '',
         averageJobValueUnit: user.providerProfile?.averageJobValueUnit || 'hour',
-        formations: user.providerProfile?.formations?.map((formation: any) => ({
-          ...formation,
-          startDate: formation.startDate ? new Date(formation.startDate).toISOString().split('T')[0] : '',
-          endDate: formation.endDate ? new Date(formation.endDate).toISOString().split('T')[0] : ''
-        })) || []
+        formations: user.providerProfile?.formations || []
       })
       loadPosts()
     }
@@ -202,6 +198,8 @@ export default function PrestadorDashboard() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...profileData,
+          serviceCities: JSON.stringify(profileData.serviceCities),
+          serviceAreas: JSON.stringify(profileData.serviceAreas),
           experience: profileData.experience ? parseInt(profileData.experience) : null,
           totalJobs: profileData.totalJobs ? parseInt(profileData.totalJobs) : null,
           averageJobValue: profileData.averageJobValue ? parseFloat(profileData.averageJobValue) : null
@@ -382,18 +380,6 @@ export default function PrestadorDashboard() {
                   <span className="text-sm text-gray-600">Avaliações</span>
                   <span className="font-semibold">{user.providerProfile?.totalReviews || 0}</span>
                 </div>
-                {user.providerProfile?.experience && (
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-600">Experiência</span>
-                    <span className="font-semibold">{user.providerProfile.experience} {user.providerProfile.experienceUnit === 'years' ? 'anos' : 'meses'}</span>
-                  </div>
-                )}
-                {user.providerProfile?.averageJobValue && (
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-600">Valor Médio</span>
-                    <span className="font-semibold">R$ {user.providerProfile.averageJobValue}/{user.providerProfile.averageJobValueUnit === 'hour' ? 'hora' : 'dia'}</span>
-                  </div>
-                )}
                 {user.providerProfile?.description && (
                   <p className="text-sm text-gray-600">{user.providerProfile.description}</p>
                 )}
@@ -417,56 +403,6 @@ export default function PrestadorDashboard() {
                   } catch { return null }
                 })()}
 
-                {/* Formações */}
-                {user.providerProfile?.formations && user.providerProfile.formations.length > 0 && (
-                  <div className="mt-4">
-                    <h4 className="text-sm font-medium text-gray-700 mb-2">Formações</h4>
-                    <div className="space-y-2">
-                      {user.providerProfile.formations.map((formation: any, index: number) => (
-                        <div key={index} className="text-xs text-gray-600 bg-gray-50 p-3 rounded border">
-                          <div className="font-medium">{formation.institutionName}</div>
-                          <div className="mb-1">{formation.area}</div>
-                          {formation.startDate && formation.endDate && (
-                            <div className="text-gray-500 mb-2">
-                              {new Date(formation.startDate).toLocaleDateString('pt-BR')} - {new Date(formation.endDate).toLocaleDateString('pt-BR')}
-                            </div>
-                          )}
-                          {formation.certificateUrl && (
-                            <div className="mt-2 pt-2 border-t border-gray-200">
-                              <div className="flex items-center gap-2">
-                                <FileText className="w-3 h-3 text-blue-600" />
-                                <span className="text-xs text-blue-600 font-medium">Certificado disponível</span>
-                              </div>
-                              <div className="flex gap-1 mt-1">
-                                <Button
-                                  type="button"
-                                  variant="outline"
-                                  size="sm"
-                                  className="h-6 px-2 text-xs"
-                                  onClick={() => window.open(formation.certificateUrl, '_blank')}
-                                >
-                                  <ExternalLink className="w-3 h-3 mr-1" />
-                                  Ver
-                                </Button>
-                                <Button
-                                  type="button"
-                                  variant="outline"
-                                  size="sm"
-                                  className="h-6 px-2 text-xs"
-                                  onClick={() => window.open(formation.certificateUrl, '_blank', 'download')}
-                                >
-                                  <Download className="w-3 h-3 mr-1" />
-                                  Baixar
-                                </Button>
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
                 <Dialog open={isEditProfileOpen} onOpenChange={setIsEditProfileOpen}>
                   <DialogTrigger asChild>
                     <Button variant="outline" className="w-full"><Edit className="w-4 h-4 mr-2" />Editar Perfil</Button>
@@ -485,21 +421,21 @@ export default function PrestadorDashboard() {
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="profilePhone">Telefone</Label>
-                        <Input
-                          id="profilePhone"
-                          value={profileData.phone}
-                          onChange={(e) => setProfileData(prev => ({ ...prev, phone: e.target.value }))}
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="profileDescription">Descrição</Label>
-                        <Textarea
-                          id="profileDescription"
-                          value={profileData.description}
-                          onChange={(e) => setProfileData(prev => ({ ...prev, description: e.target.value }))}
-                          rows={3}
-                        />
+                      <Label htmlFor="profileCity">Cidade Base</Label>
+                          <Input
+                            id="profileCity"
+                            value={profileData.city}
+                            onChange={(e) => setProfileData(prev => ({ ...prev, city: e.target.value }))}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="profileState">Estado</Label>
+                          <Input
+                            id="profileState"
+                            value={profileData.state}
+                            onChange={(e) => setProfileData(prev => ({ ...prev, state: e.target.value }))}
+                          />
+                        </div>
                       </div>
 
                       {user.providerProfile && (
@@ -656,43 +592,6 @@ export default function PrestadorDashboard() {
                                 onChange={(e) => updateFormation(index, 'certificateUrl', e.target.value)}
                                 placeholder="Link para o certificado"
                               />
-                              {formation.certificateUrl && (
-                                <div className="mt-2">
-                                  <Label className="text-sm text-muted-foreground">Pré-visualização do Certificado:</Label>
-                                  <div className="mt-1 border rounded-lg p-3 bg-gray-50">
-                                    <div className="flex items-center gap-2 mb-2">
-                                      <FileText className="w-4 h-4 text-blue-600" />
-                                      <span className="text-sm font-medium">Certificado Anexado</span>
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                      <Button
-                                        type="button"
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={() => window.open(formation.certificateUrl, '_blank')}
-                                      >
-                                        <ExternalLink className="w-3 h-3 mr-1" />
-                                        Visualizar
-                                      </Button>
-                                      <Button
-                                        type="button"
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={() => window.open(formation.certificateUrl, '_blank', 'download')}
-                                      >
-                                        <Download className="w-3 h-3 mr-1" />
-                                        Baixar
-                                      </Button>
-                                    </div>
-                                    <div className="mt-2 text-xs text-muted-foreground">
-                                      URL: {formation.certificateUrl.length > 50 ? 
-                                        `${formation.certificateUrl.substring(0, 50)}...` : 
-                                        formation.certificateUrl
-                                      }
-                                    </div>
-                                  </div>
-                                </div>
-                              )}
                             </div>
                             
                             <div className="grid grid-cols-2 gap-3">

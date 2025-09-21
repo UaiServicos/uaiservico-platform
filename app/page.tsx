@@ -1,12 +1,94 @@
+"use client"
+
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Star, Search, MapPin, Phone, MessageCircle, Shield, Users, Clock, CheckCircle } from "lucide-react"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Star, Search, MapPin, Phone, MessageCircle, Shield, Users, Clock, CheckCircle, Briefcase, GraduationCap, DollarSign } from "lucide-react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
+
+interface StatsData {
+  totalProviders: number
+  featuredProviders: Array<{
+    id: string
+    name: string
+    service: string
+    rating: number
+    reviews: number
+    location: string
+    areas: string[]
+    price: string
+    image: string
+    verified: boolean
+    responseTime: string
+    experience?: string
+    totalJobs?: number
+    averageJobValue?: string
+    averageJobValueUnit?: string
+    formations?: Array<{
+      institution: string
+      area: string
+    }>
+  }>
+  categoryStats: Array<{
+    name: string
+    icon: string
+    count: number
+  }>
+}
 
 export default function HomePage() {
+  const router = useRouter()
+  const [searchService, setSearchService] = useState("")
+  const [searchCity, setSearchCity] = useState("")
+  const [stats, setStats] = useState<StatsData | null>(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const response = await fetch('/api/stats')
+        if (response.ok) {
+          const data = await response.json()
+          setStats(data)
+        } else {
+          console.error('Erro na resposta da API:', response.status)
+          // Definir dados padrão em caso de erro
+          setStats({
+            totalProviders: 0,
+            featuredProviders: [],
+            categoryStats: []
+          })
+        }
+      } catch (error) {
+        console.error('Erro ao buscar estatísticas:', error)
+        // Definir dados padrão em caso de erro
+        setStats({
+          totalProviders: 0,
+          featuredProviders: [],
+          categoryStats: []
+        })
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchStats()
+  }, [])
+
+  const handleSearch = () => {
+    const params = new URLSearchParams()
+    if (searchService) params.append('service', searchService)
+    if (searchCity && searchCity !== 'todas') params.append('city', searchCity)
+    
+    const queryString = params.toString()
+    router.push(`/dashboard-publico${queryString ? `?${queryString}` : ''}`)
+  }
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -65,7 +147,7 @@ export default function HomePage() {
             </Button>
           </div>
 
-          {/* Search Bar - now just for visual appeal */}
+          {/* Search Bar */}
           <div className="max-w-2xl mx-auto mb-12">
             <div className="flex flex-col md:flex-row gap-3 p-2 bg-background rounded-xl shadow-xl border-2 border-primary/10">
               <div className="flex-1 relative">
@@ -73,21 +155,68 @@ export default function HomePage() {
                 <Input
                   placeholder="Que serviço você precisa? (ex: pedreiro, encanador...)"
                   className="pl-10 border-0 focus-visible:ring-2 focus-visible:ring-primary"
+                  value={searchService}
+                  onChange={(e) => setSearchService(e.target.value)}
                 />
               </div>
               <div className="flex-1 relative">
                 <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
-                <Input
-                  placeholder="Sua cidade"
-                  className="pl-10 border-0 focus-visible:ring-2 focus-visible:ring-primary"
-                />
+                <Select value={searchCity} onValueChange={setSearchCity}>
+                  <SelectTrigger className="pl-10 border-0 focus-visible:ring-2 focus-visible:ring-primary">
+                    <SelectValue placeholder="Sua cidade" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="todas">Todas as cidades</SelectItem>
+                    <SelectItem value="belo-horizonte">Belo Horizonte</SelectItem>
+                    <SelectItem value="contagem">Contagem</SelectItem>
+                    <SelectItem value="uberlandia">Uberlândia</SelectItem>
+                    <SelectItem value="juiz-de-fora">Juiz de Fora</SelectItem>
+                    <SelectItem value="betim">Betim</SelectItem>
+                    <SelectItem value="montes-claros">Montes Claros</SelectItem>
+                    <SelectItem value="ribeirao-das-neves">Ribeirão das Neves</SelectItem>
+                    <SelectItem value="uberaba">Uberaba</SelectItem>
+                    <SelectItem value="governador-valadares">Governador Valadares</SelectItem>
+                    <SelectItem value="ipatinga">Ipatinga</SelectItem>
+                    <SelectItem value="santa-luzia">Santa Luzia</SelectItem>
+                    <SelectItem value="sete-lagoas">Sete Lagoas</SelectItem>
+                    <SelectItem value="divinopolis">Divinópolis</SelectItem>
+                    <SelectItem value="ibirite">Ibirité</SelectItem>
+                    <SelectItem value="passos">Passos</SelectItem>
+                    <SelectItem value="patos-de-minas">Patos de Minas</SelectItem>
+                    <SelectItem value="pouso-alegre">Pouso Alegre</SelectItem>
+                    <SelectItem value="teofilo-otoni">Teófilo Otoni</SelectItem>
+                    <SelectItem value="pocos-de-caldas">Poços de Caldas</SelectItem>
+                    <SelectItem value="patrocinio">Patrocínio</SelectItem>
+                    <SelectItem value="nova-lima">Nova Lima</SelectItem>
+                    <SelectItem value="itabira">Itabira</SelectItem>
+                    <SelectItem value="ouro-preto">Ouro Preto</SelectItem>
+                    <SelectItem value="diamantina">Diamantina</SelectItem>
+                    <SelectItem value="sao-joao-del-rei">São João del Rei</SelectItem>
+                    <SelectItem value="tiradentes">Tiradentes</SelectItem>
+                    <SelectItem value="mariana">Mariana</SelectItem>
+                    <SelectItem value="congonhas">Congonhas</SelectItem>
+                    <SelectItem value="sabara">Sabará</SelectItem>
+                    <SelectItem value="caete">Caeté</SelectItem>
+                    <SelectItem value="lagoa-santa">Lagoa Santa</SelectItem>
+                    <SelectItem value="vespasiano">Vespasiano</SelectItem>
+                    <SelectItem value="santa-barbara">Santa Bárbara</SelectItem>
+                    <SelectItem value="itauna">Itaúna</SelectItem>
+                    <SelectItem value="formiga">Formiga</SelectItem>
+                    <SelectItem value="lagoa-da-prata">Lagoa da Prata</SelectItem>
+                    <SelectItem value="araxa">Araxá</SelectItem>
+                    <SelectItem value="frutal">Frutal</SelectItem>
+                    <SelectItem value="ituiutaba">Ituiutaba</SelectItem>
+                    <SelectItem value="monte-carmelo">Monte Carmelo</SelectItem>
+                    <SelectItem value="vicosa">Viçosa</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
               <Button
                 size="lg"
                 className="px-8 bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90"
-                asChild
+                onClick={handleSearch}
               >
-                <Link href="/dashboard-publico">Buscar</Link>
+                Buscar
               </Button>
             </div>
           </div>
@@ -100,7 +229,9 @@ export default function HomePage() {
             </div>
             <div className="flex items-center gap-2">
               <Users className="w-5 h-5 text-primary" />
-              <span>+1.000 Prestadores</span>
+              <span>
+                {loading ? 'Carregando...' : `+${stats?.totalProviders || 0} Prestadores`}
+              </span>
             </div>
             <div className="flex items-center gap-2">
               <Star className="w-5 h-5 text-primary" />
@@ -115,28 +246,28 @@ export default function HomePage() {
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center mb-12">Principais Serviços</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-            {[
-              { name: "Pedreiro", icon: "🔨", count: "120+" },
-              { name: "Encanador", icon: "🔧", count: "85+" },
-              { name: "Eletricista", icon: "⚡", count: "95+" },
-              { name: "Diarista", icon: "🧹", count: "200+" },
-              { name: "Pintor", icon: "🎨", count: "75+" },
-              { name: "Jardineiro", icon: "🌱", count: "45+" },
-              { name: "Marceneiro", icon: "🪚", count: "35+" },
-              { name: "Mecânico", icon: "🔩", count: "60+" },
-              { name: "Costureira", icon: "✂️", count: "40+" },
-              { name: "Cozinheira", icon: "👩‍🍳", count: "55+" },
-              { name: "Babá", icon: "👶", count: "80+" },
-              { name: "Pet Sitter", icon: "🐕", count: "25+" },
-            ].map((service) => (
-              <Card key={service.name} className="hover:shadow-md transition-shadow cursor-pointer group">
-                <CardContent className="p-4 text-center">
-                  <div className="text-3xl mb-2 group-hover:scale-110 transition-transform">{service.icon}</div>
-                  <h3 className="font-semibold text-sm mb-1">{service.name}</h3>
-                  <p className="text-xs text-muted-foreground">{service.count} profissionais</p>
-                </CardContent>
-              </Card>
-            ))}
+            {loading ? (
+              // Loading skeleton
+              Array.from({ length: 12 }).map((_, index) => (
+                <Card key={index} className="animate-pulse">
+                  <CardContent className="p-4 text-center">
+                    <div className="w-12 h-12 bg-muted rounded mx-auto mb-2"></div>
+                    <div className="h-4 bg-muted rounded mb-1"></div>
+                    <div className="h-3 bg-muted rounded w-3/4 mx-auto"></div>
+                  </CardContent>
+                </Card>
+              ))
+            ) : (
+              stats?.categoryStats.map((service) => (
+                <Card key={service.name} className="hover:shadow-md transition-shadow cursor-pointer group">
+                  <CardContent className="p-4 text-center">
+                    <div className="text-3xl mb-2 group-hover:scale-110 transition-transform">{service.icon}</div>
+                    <h3 className="font-semibold text-sm mb-1">{service.name}</h3>
+                    <p className="text-xs text-muted-foreground">{service.count} profissionais</p>
+                  </CardContent>
+                </Card>
+              ))
+            )}
           </div>
         </div>
       </section>
@@ -146,96 +277,151 @@ export default function HomePage() {
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center mb-12">Profissionais em Destaque</h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[
-              {
-                name: "João Silva",
-                service: "Pedreiro",
-                rating: 4.9,
-                reviews: 127,
-                location: "Belo Horizonte, MG",
-                price: "A partir de R$ 80/dia",
-                image: "/professional-construction-worker.jpg",
-                verified: true,
-                responseTime: "2h",
-              },
-              {
-                name: "Maria Santos",
-                service: "Diarista",
-                rating: 5.0,
-                reviews: 89,
-                location: "Contagem, MG",
-                price: "A partir de R$ 120/dia",
-                image: "/professional-cleaning-lady.jpg",
-                verified: true,
-                responseTime: "1h",
-              },
-              {
-                name: "Carlos Oliveira",
-                service: "Eletricista",
-                rating: 4.8,
-                reviews: 156,
-                location: "Betim, MG",
-                price: "A partir de R$ 100/serviço",
-                image: "/professional-electrician.png",
-                verified: true,
-                responseTime: "30min",
-              },
-            ].map((provider) => (
-              <Card key={provider.name} className="hover:shadow-lg transition-shadow">
-                <CardContent className="p-6">
-                  <div className="flex items-start gap-4 mb-4">
-                    <Avatar className="w-16 h-16">
-                      <AvatarImage src={provider.image || "/placeholder.svg"} alt={provider.name} />
-                      <AvatarFallback>
-                        {provider.name
-                          .split(" ")
-                          .map((n) => n[0])
-                          .join("")}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1">
-                        <h3 className="font-semibold">{provider.name}</h3>
-                        {provider.verified && <CheckCircle className="w-4 h-4 text-primary" />}
-                      </div>
-                      <Badge variant="secondary" className="mb-2">
-                        {provider.service}
-                      </Badge>
-                      <div className="flex items-center gap-1 mb-1">
-                        <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                        <span className="font-medium">{provider.rating}</span>
-                        <span className="text-muted-foreground text-sm">({provider.reviews} avaliações)</span>
-                      </div>
-                      <div className="flex items-center gap-1 text-sm text-muted-foreground mb-2">
-                        <MapPin className="w-4 h-4" />
-                        <span>{provider.location}</span>
-                      </div>
-                      <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                        <Clock className="w-4 h-4" />
-                        <span>Responde em {provider.responseTime}</span>
+            {loading ? (
+              // Loading skeleton
+              Array.from({ length: 3 }).map((_, index) => (
+                <Card key={index} className="animate-pulse">
+                  <CardContent className="p-6">
+                    <div className="flex items-start gap-4 mb-4">
+                      <div className="w-16 h-16 bg-muted rounded-full"></div>
+                      <div className="flex-1">
+                        <div className="h-4 bg-muted rounded mb-2"></div>
+                        <div className="h-3 bg-muted rounded w-1/2 mb-2"></div>
+                        <div className="h-3 bg-muted rounded w-3/4 mb-2"></div>
+                        <div className="h-3 bg-muted rounded w-1/3"></div>
                       </div>
                     </div>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="font-semibold text-primary">{provider.price}</span>
-                    <div className="flex gap-2">
-                      <Button size="sm" variant="outline">
-                        <Phone className="w-4 h-4 mr-1" />
-                        Ligar
-                      </Button>
-                      <Button size="sm">
-                        <MessageCircle className="w-4 h-4 mr-1" />
-                        WhatsApp
-                      </Button>
+                    <div className="flex justify-between">
+                      <div className="h-4 bg-muted rounded w-1/3"></div>
+                      <div className="flex gap-2">
+                        <div className="h-8 bg-muted rounded w-16"></div>
+                        <div className="h-8 bg-muted rounded w-20"></div>
+                      </div>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+                  </CardContent>
+                </Card>
+              ))
+            ) : stats?.featuredProviders.length ? (
+              stats.featuredProviders.map((provider) => (
+                <Card key={provider.id} className="hover:shadow-lg transition-shadow">
+                  <CardContent className="p-6">
+                    <div className="flex items-start gap-4 mb-4">
+                      <Avatar className="w-16 h-16">
+                        <AvatarImage src={provider.image || "/placeholder.svg"} alt={provider.name} />
+                        <AvatarFallback>
+                          {provider.name
+                            .split(" ")
+                            .map((n) => n[0])
+                            .join("")}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-1">
+                          <h3 className="font-semibold">{provider.name}</h3>
+                          {provider.verified && <CheckCircle className="w-4 h-4 text-primary" />}
+                        </div>
+                        <Badge variant="secondary" className="mb-2">
+                          {provider.service}
+                        </Badge>
+                        <div className="flex items-center gap-1 mb-1">
+                          <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                          <span className="font-medium">{provider.rating.toFixed(1)}</span>
+                          <span className="text-muted-foreground text-sm">({provider.reviews} avaliações)</span>
+                        </div>
+                        <div className="flex items-center gap-1 text-sm text-muted-foreground mb-2">
+                          <MapPin className="w-4 h-4" />
+                          <span>{provider.location}</span>
+                        </div>
+                        {provider.areas && provider.areas.length > 0 && (
+                          <div className="flex flex-wrap gap-1 mb-2">
+                            {provider.areas.slice(0, 2).map((area: string, index: number) => (
+                              <Badge key={index} variant="secondary" className="text-xs">
+                                {area}
+                              </Badge>
+                            ))}
+                            {provider.areas.length > 2 && (
+                              <Badge variant="secondary" className="text-xs">
+                                +{provider.areas.length - 2}
+                              </Badge>
+                            )}
+                          </div>
+                        )}
+                        <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                          <Clock className="w-4 h-4" />
+                          <span>Responde em {provider.responseTime}</span>
+                        </div>
+                        
+                        {/* Novos campos */}
+                        {provider.experience && (
+                          <div className="flex items-center gap-1 text-sm text-muted-foreground mt-2">
+                            <Briefcase className="w-4 h-4" />
+                            <span>{provider.experience}</span>
+                          </div>
+                        )}
+                        
+                        {provider.totalJobs && provider.totalJobs > 0 && (
+                          <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                            <CheckCircle className="w-4 h-4" />
+                            <span>{provider.totalJobs} trabalhos realizados</span>
+                          </div>
+                        )}
+                        
+                        {provider.formations && provider.formations.length > 0 && (
+                          <div className="mt-2">
+                            <div className="flex items-center gap-1 text-sm text-muted-foreground mb-1">
+                              <GraduationCap className="w-4 h-4" />
+                              <span>Formações:</span>
+                            </div>
+                            <div className="flex flex-wrap gap-1">
+                              {provider.formations.slice(0, 2).map((formation, index) => (
+                                <Badge key={index} variant="outline" className="text-xs">
+                                  {formation.area}
+                                </Badge>
+                              ))}
+                              {provider.formations.length > 2 && (
+                                <Badge variant="outline" className="text-xs">
+                                  +{provider.formations.length - 2}
+                                </Badge>
+                              )}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="font-semibold text-primary">
+                        {provider.averageJobValue ? 
+                          `R$ ${provider.averageJobValue}/${provider.averageJobValueUnit === 'hour' ? 'hora' : 'dia'}` : 
+                          'Consulte preço'
+                        }
+                      </span>
+                      <div className="flex gap-2">
+                        <Button size="sm" variant="outline" asChild>
+                          <Link href={`/prestador/${provider.id}`}>
+                            <Phone className="w-4 h-4 mr-1" />
+                            Ver Perfil
+                          </Link>
+                        </Button>
+                        <Button size="sm" asChild>
+                          <Link href={`/prestador/${provider.id}`}>
+                            <MessageCircle className="w-4 h-4 mr-1" />
+                            Contatar
+                          </Link>
+                        </Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))
+            ) : (
+              <div className="col-span-full text-center py-8">
+                <p className="text-muted-foreground">Nenhum profissional em destaque encontrado.</p>
+              </div>
+            )}
           </div>
           <div className="text-center mt-8">
-            <Button variant="outline" size="lg">
-              Ver Todos os Profissionais
+            <Button variant="outline" size="lg" asChild>
+              <Link href="/dashboard-publico">Ver Todos os Profissionais</Link>
             </Button>
           </div>
         </div>
@@ -331,17 +517,17 @@ export default function HomePage() {
               <h4 className="font-semibold mb-3">Para Clientes</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
                 <li>
-                  <Link href="#" className="hover:text-foreground">
+                  <Link href="/como-funciona" className="hover:text-foreground">
                     Como Funciona
                   </Link>
                 </li>
                 <li>
-                  <Link href="#" className="hover:text-foreground">
+                  <Link href="/buscar-servicos" className="hover:text-foreground">
                     Buscar Serviços
                   </Link>
                 </li>
                 <li>
-                  <Link href="#" className="hover:text-foreground">
+                  <Link href="/avaliar-prestador" className="hover:text-foreground">
                     Avaliar Prestador
                   </Link>
                 </li>
@@ -351,17 +537,17 @@ export default function HomePage() {
               <h4 className="font-semibold mb-3">Para Prestadores</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
                 <li>
-                  <Link href="#" className="hover:text-foreground">
+                  <Link href="/cadastro-prestador" className="hover:text-foreground">
                     Cadastrar-se
                   </Link>
                 </li>
                 <li>
-                  <Link href="#" className="hover:text-foreground">
+                  <Link href="/planos" className="hover:text-foreground">
                     Planos
                   </Link>
                 </li>
                 <li>
-                  <Link href="#" className="hover:text-foreground">
+                  <Link href="/dashboard" className="hover:text-foreground">
                     Dashboard
                   </Link>
                 </li>
@@ -371,17 +557,17 @@ export default function HomePage() {
               <h4 className="font-semibold mb-3">Suporte</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
                 <li>
-                  <Link href="#" className="hover:text-foreground">
+                  <Link href="/central-ajuda" className="hover:text-foreground">
                     Central de Ajuda
                   </Link>
                 </li>
                 <li>
-                  <Link href="#" className="hover:text-foreground">
+                  <Link href="/contato" className="hover:text-foreground">
                     Contato
                   </Link>
                 </li>
                 <li>
-                  <Link href="#" className="hover:text-foreground">
+                  <Link href="/termos-uso" className="hover:text-foreground">
                     Termos de Uso
                   </Link>
                 </li>

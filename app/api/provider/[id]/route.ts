@@ -24,7 +24,8 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
           include: {
             category: true
           }
-        }
+        },
+        formations: true
       }
     })
 
@@ -47,11 +48,17 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
       }
     })
 
+    // Parse images from JSON string
+    const postsWithParsedImages = posts.map(post => ({
+      ...post,
+      images: post.images ? JSON.parse(post.images) : []
+    }))
+
     if (!provider) {
       return NextResponse.json({ error: 'Prestador não encontrado' }, { status: 404 })
     }
 
-    return NextResponse.json({ provider: { ...provider, posts } })
+    return NextResponse.json({ provider: { ...provider, posts: postsWithParsedImages } })
   } catch (error) {
     console.error('Get provider error:', error)
     return NextResponse.json({ error: 'Erro interno do servidor' }, { status: 500 })

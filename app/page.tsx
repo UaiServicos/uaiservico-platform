@@ -24,7 +24,8 @@ interface StatsData {
     price: string
     image: string
     verified: boolean
-    responseTime: string
+    onlineStatus: string
+    isOnline: boolean
     experience?: string
     totalJobs?: number
     averageJobValue?: string
@@ -347,8 +348,8 @@ export default function HomePage() {
                           </div>
                         )}
                         <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                          <Clock className="w-4 h-4" />
-                          <span>Responde em {provider.responseTime}</span>
+                          <div className={`w-2 h-2 rounded-full ${provider.isOnline ? 'bg-green-500' : 'bg-gray-400'}`}></div>
+                          <span>{provider.onlineStatus}</span>
                         </div>
                         
                         {/* Novos campos */}

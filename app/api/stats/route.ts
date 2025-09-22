@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { getOnlineStatus } from '@/lib/online-status'
 
 export async function GET() {
   try {
@@ -18,7 +19,10 @@ export async function GET() {
         user: {
           select: {
             name: true,
-            avatar: true
+            avatar: true,
+            lastLogin: true,
+            lastActivity: true,
+            lastLogout: true
           }
         },
         services: {
@@ -75,6 +79,7 @@ export async function GET() {
     const formattedProviders = featuredProviders.map(provider => {
       const mainService = provider.services[0]?.category?.name || 'Serviços Gerais'
       const serviceAreas = provider.services.slice(1, 4).map(s => s.category.name)
+      const onlineStatus = getOnlineStatus(provider.user.lastActivity, provider.user.lastLogin, provider.user.lastLogout)
       
       return {
         id: provider.id,
@@ -88,7 +93,8 @@ export async function GET() {
                provider.dailyRate ? `A partir de R$ ${provider.dailyRate}/dia` : 'Consulte',
         image: provider.user.avatar || '/placeholder.svg',
         verified: provider.verified,
-        responseTime: provider.responseTime ? `${provider.responseTime}min` : '2h',
+        onlineStatus: onlineStatus.statusText,
+        isOnline: onlineStatus.isOnline,
         experience: provider.experience ? `${provider.experience} ${provider.experienceUnit === 'years' ? 'anos' : 'meses'}` : null,
         totalJobs: provider.totalJobs || 0,
         averageJobValue: provider.averageJobValue,

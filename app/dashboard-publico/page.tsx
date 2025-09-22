@@ -385,11 +385,10 @@ export default function PublicDashboard() {
                         <span className="font-semibold text-primary">Consulte preço</span>
                       )}
                     </div>
-                    {provider.responseTime && (
-                      <div className="text-xs text-muted-foreground">
-                        Responde em {provider.responseTime}min
-                      </div>
-                    )}
+                    <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                      <div className={`w-1.5 h-1.5 rounded-full ${provider.isOnline ? 'bg-green-500' : 'bg-gray-400'}`}></div>
+                      <span>{provider.onlineStatus}</span>
+                    </div>
                   </div>
 
                   {/* Novos campos */}

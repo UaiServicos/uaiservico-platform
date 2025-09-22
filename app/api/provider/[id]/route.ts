@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { getOnlineStatus } from '@/lib/online-status'
 
 export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
   try {
@@ -17,7 +18,10 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
             name: true,
             phone: true,
             avatar: true,
-            email: true
+            email: true,
+            lastLogin: true,
+            lastActivity: true,
+            lastLogout: true
           }
         },
         services: {
@@ -58,7 +62,16 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
       return NextResponse.json({ error: 'Prestador não encontrado' }, { status: 404 })
     }
 
-    return NextResponse.json({ provider: { ...provider, posts: postsWithParsedImages } })
+    const onlineStatus = getOnlineStatus(provider.user.lastActivity, provider.user.lastLogin, provider.user.lastLogout)
+
+    return NextResponse.json({ 
+      provider: { 
+        ...provider, 
+        posts: postsWithParsedImages,
+        onlineStatus: onlineStatus.statusText,
+        isOnline: onlineStatus.isOnline
+      } 
+    })
   } catch (error) {
     console.error('Get provider error:', error)
     return NextResponse.json({ error: 'Erro interno do servidor' }, { status: 500 })

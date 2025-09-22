@@ -17,6 +17,7 @@ import { AvatarUpload } from '@/components/avatar-upload'
 import { CitySelector } from '@/components/city-selector'
 import { ServiceAreaSelector } from '@/components/service-area-selector'
 import { useAuth } from '@/hooks/use-auth'
+import { useActivity } from '@/hooks/use-activity'
 import { useRouter } from 'next/navigation'
 
 interface Post {
@@ -36,6 +37,9 @@ interface Post {
 export default function PrestadorDashboard() {
   const { user, loading: authLoading, logout } = useAuth()
   const router = useRouter()
+  
+  // Enviar heartbeat de atividade
+  useActivity()
   const [posts, setPosts] = useState<Post[]>([])
   const [newPost, setNewPost] = useState({
     title: '',

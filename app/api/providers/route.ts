@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { getOnlineStatus } from '@/lib/online-status'
 
 export async function GET(request: NextRequest) {
   try {
@@ -17,7 +18,10 @@ export async function GET(request: NextRequest) {
             name: true,
             email: true,
             phone: true,
-            avatar: true
+            avatar: true,
+            lastLogin: true,
+            lastActivity: true,
+            lastLogout: true
           }
         },
         services: {
@@ -79,8 +83,15 @@ export async function GET(request: NextRequest) {
       })
     }
 
-    // Limitar resultados
-    const providers = filteredProviders.slice(0, 50)
+    // Limitar resultados e adicionar status online
+    const providers = filteredProviders.slice(0, 50).map(provider => {
+      const onlineStatus = getOnlineStatus(provider.user.lastActivity, provider.user.lastLogin, provider.user.lastLogout)
+      return {
+        ...provider,
+        onlineStatus: onlineStatus.statusText,
+        isOnline: onlineStatus.isOnline
+      }
+    })
 
     return NextResponse.json({ providers })
   } catch (error) {

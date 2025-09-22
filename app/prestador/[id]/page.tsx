@@ -234,8 +234,8 @@ export default function ProviderProfilePage() {
                   </div>
 
                   <div className="flex items-center justify-center md:justify-start gap-2">
-                    <Clock className="w-5 h-5 text-muted-foreground" />
-                    <span>Responde em {provider.responseTime || '2 horas'}</span>
+                    <div className={`w-2 h-2 rounded-full ${provider.isOnline ? 'bg-green-500' : 'bg-gray-400'}`}></div>
+                    <span>{provider.onlineStatus}</span>
                   </div>
                 </div>
 
@@ -436,8 +436,11 @@ export default function ProviderProfilePage() {
                     <p className="font-semibold">{provider.user?.email}</p>
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-muted-foreground">Tempo de Resposta</label>
-                    <p className="font-semibold">{provider.responseTime || '2 horas'}</p>
+                    <label className="text-sm font-medium text-muted-foreground">Status</label>
+                    <div className="flex items-center gap-2">
+                      <div className={`w-2 h-2 rounded-full ${provider.isOnline ? 'bg-green-500' : 'bg-gray-400'}`}></div>
+                      <p className="font-semibold">{provider.onlineStatus}</p>
+                    </div>
                   </div>
                   <Button onClick={handleContact} className="w-full">
                     <MessageCircle className="w-4 h-4 mr-2" />

@@ -19,6 +19,17 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Credenciais inválidas' }, { status: 401 })
     }
 
+    // Atualizar lastLogin, lastActivity e limpar lastLogout
+    const now = new Date()
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { 
+        lastLogin: now,
+        lastActivity: now,
+        lastLogout: null // Limpar logout anterior
+      }
+    })
+
     const token = jwt.sign(
       { userId: user.id, userType: user.userType },
       'fallback-secret-key',

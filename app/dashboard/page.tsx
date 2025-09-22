@@ -17,11 +17,15 @@ import { RatingModal } from "@/components/rating-modal"
 import { useRating } from "@/hooks/use-rating"
 import { AvatarUpload } from "@/components/avatar-upload"
 import { useAuth } from "@/hooks/use-auth"
+import { useActivity } from "@/hooks/use-activity"
 
 export default function DashboardPage() {
   const router = useRouter()
   const { user, loading: authLoading, logout } = useAuth()
   const { pendingRatings, markContactAsMade, removePendingRating } = useRating()
+  
+  // Enviar heartbeat de atividade
+  useActivity()
   const [activeTab, setActiveTab] = useState("inicio")
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedCategory, setSelectedCategory] = useState("all")

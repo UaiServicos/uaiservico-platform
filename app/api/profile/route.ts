@@ -7,8 +7,9 @@ async function getUserFromToken(request: NextRequest) {
   if (!token) return null
 
   try {
-    return jwt.verify(token, process.env.JWT_SECRET || "fallback-secret-key") as { userId: string }
-  } catch {
+    const decoded = jwt.verify(token, "fallback-secret-key") as { userId: string }
+    return decoded
+  } catch (error) {
     return null
   }
 }
@@ -25,7 +26,11 @@ export async function GET(request: NextRequest) {
       where: { id: user.userId },
       include: {
         clientProfile: true,
-        providerProfile: true,
+        providerProfile: {
+          include: {
+            formations: true
+          }
+        },
       },
     })
 
@@ -48,7 +53,22 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: "Não autorizado" }, { status: 401 })
     }
 
-    const { name, description, city, state, phone, serviceCities, serviceAreas } = await request.json()
+    const { 
+      name, 
+      description, 
+      city, 
+      state, 
+      phone, 
+      serviceCities, 
+      serviceAreas,
+      experience,
+      experienceUnit,
+      totalJobs,
+      averageJobValue,
+      averageJobValueUnit,
+      formations
+    } = await request.json()
+
 
     // Atualiza informações básicas do usuário
     await prisma.user.update({
@@ -70,10 +90,40 @@ export async function PUT(request: NextRequest) {
           state,
           serviceCities: JSON.stringify(serviceCities || []),
           serviceAreas: JSON.stringify(serviceAreas || []),
+          experience: experience ? parseInt(experience) : undefined,
+          experienceUnit,
+          totalJobs: totalJobs ? parseInt(totalJobs) : undefined,
+          averageJobValue: averageJobValue ? parseFloat(averageJobValue) : undefined,
+          averageJobValueUnit,
         },
       })
+
+
+      // Gerenciar formações
+      if (formations && Array.isArray(formations)) {
+        // Deletar formações existentes
+        await prisma.formation.deleteMany({
+          where: { providerId: existingProfile.id }
+        })
+
+        // Criar novas formações
+        for (const formation of formations) {
+          if (formation.institutionName && formation.area) {
+            await prisma.formation.create({
+              data: {
+                providerId: existingProfile.id,
+                institutionName: formation.institutionName,
+                area: formation.area,
+                certificateUrl: formation.certificateUrl || null,
+                startDate: formation.startDate ? new Date(formation.startDate + 'T00:00:00.000Z') : null,
+                endDate: formation.endDate ? new Date(formation.endDate + 'T00:00:00.000Z') : null,
+              },
+            })
+          }
+        }
+      }
     } else {
-      await prisma.providerProfile.create({
+      const newProfile =       await prisma.providerProfile.create({
         data: {
           userId: user.userId,
           description,
@@ -81,14 +131,45 @@ export async function PUT(request: NextRequest) {
           state,
           serviceCities: JSON.stringify(serviceCities || []),
           serviceAreas: JSON.stringify(serviceAreas || []),
+          experience: experience ? parseInt(experience) : undefined,
+          experienceUnit,
+          totalJobs: totalJobs ? parseInt(totalJobs) : undefined,
+          averageJobValue: averageJobValue ? parseFloat(averageJobValue) : undefined,
+          averageJobValueUnit,
         },
       })
+
+
+      // Gerenciar formações para novo perfil
+      if (formations && Array.isArray(formations)) {
+        for (const formation of formations) {
+          if (formation.institutionName && formation.area) {
+            await prisma.formation.create({
+              data: {
+                providerId: newProfile.id,
+                institutionName: formation.institutionName,
+                area: formation.area,
+                certificateUrl: formation.certificateUrl || null,
+                startDate: formation.startDate ? new Date(formation.startDate + 'T00:00:00.000Z') : null,
+                endDate: formation.endDate ? new Date(formation.endDate + 'T00:00:00.000Z') : null,
+              },
+            })
+          }
+        }
+      }
     }
 
     // Retorna usuário completo atualizado
     const userData = await prisma.user.findUnique({
       where: { id: user.userId },
-      include: { providerProfile: true, clientProfile: true },
+      include: { 
+        providerProfile: {
+          include: {
+            formations: true
+          }
+        }, 
+        clientProfile: true 
+      },
     })
 
     return NextResponse.json({ user: userData })

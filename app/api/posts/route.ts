@@ -3,11 +3,11 @@ import { prisma } from '@/lib/prisma'
 import jwt from 'jsonwebtoken'
 
 function getUserFromToken(request: NextRequest) {
-  const token = request.cookies.get('auth-token')?.value
+  const token = request.cookies.get('token')?.value
   if (!token) return null
   
   try {
-    return jwt.verify(token, process.env.NEXTAUTH_SECRET || 'fallback-secret') as { userId: string }
+    return jwt.verify(token, 'fallback-secret-key') as { userId: string }
   } catch {
     return null
   }
@@ -59,7 +59,13 @@ export async function GET(request: NextRequest) {
       take: 20
     })
 
-    return NextResponse.json({ posts })
+    // Parse images from JSON string
+    const postsWithParsedImages = posts.map(post => ({
+      ...post,
+      images: post.images ? JSON.parse(post.images) : []
+    }))
+
+    return NextResponse.json({ posts: postsWithParsedImages })
   } catch (error) {
     console.error('Get posts error:', error)
     return NextResponse.json({ error: 'Erro interno do servidor' }, { status: 500 })
@@ -99,7 +105,13 @@ export async function POST(request: NextRequest) {
       }
     })
 
-    return NextResponse.json({ post })
+    // Parse images from JSON string
+    const postWithParsedImages = {
+      ...post,
+      images: post.images ? JSON.parse(post.images) : []
+    }
+
+    return NextResponse.json({ post: postWithParsedImages })
   } catch (error) {
     console.error('Create post error:', error)
     return NextResponse.json({ error: 'Erro interno do servidor' }, { status: 500 })

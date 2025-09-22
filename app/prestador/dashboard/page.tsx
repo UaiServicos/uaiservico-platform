@@ -6,16 +6,18 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { toast } from 'sonner'
-import { Plus, Edit, Star, MapPin, Calendar, LogOut, Settings, Camera } from 'lucide-react'
+import { Plus, Edit, Star, MapPin, Calendar, LogOut, Settings, Camera, Trash2, GraduationCap, Briefcase, DollarSign, FileText, ExternalLink, Download } from 'lucide-react'
 import { ImageUpload } from '@/components/image-upload'
 import { AvatarUpload } from '@/components/avatar-upload'
 import { CitySelector } from '@/components/city-selector'
 import { ServiceAreaSelector } from '@/components/service-area-selector'
 import { useAuth } from '@/hooks/use-auth'
+import { useActivity } from '@/hooks/use-activity'
 import { useRouter } from 'next/navigation'
 
 interface Post {
@@ -24,6 +26,7 @@ interface Post {
   content?: string
   serviceType?: string
   location?: string
+  images?: string[]
   createdAt: string
   _count: {
     postLikes: number
@@ -34,6 +37,9 @@ interface Post {
 export default function PrestadorDashboard() {
   const { user, loading: authLoading, logout } = useAuth()
   const router = useRouter()
+  
+  // Enviar heartbeat de atividade
+  useActivity()
   const [posts, setPosts] = useState<Post[]>([])
   const [newPost, setNewPost] = useState({
     title: '',
@@ -42,16 +48,42 @@ export default function PrestadorDashboard() {
     location: '',
     images: [] as string[]
   })
+
+  // Função para formatar texto (primeira letra maiúscula e sem hífens)
+  const formatText = (text: string) => {
+    return text
+      .split('-')
+      .map((word, index, arr) => {
+        // Se for a segunda parte (sigla do estado), manter em maiúsculas
+        if (word.length === 2 && index === arr.length - 1) {
+          return word.toUpperCase(); // Sigla do estado (2 letras)
+        }
+        // Caso contrário, capitalizar a cidade (primeira letra maiúscula)
+        return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+      })
+      .join(' ');
+  };
   const [isCreatePostOpen, setIsCreatePostOpen] = useState(false)
   const [isEditProfileOpen, setIsEditProfileOpen] = useState(false)
   const [profileData, setProfileData] = useState({
     name: '',
     description: '',
-    city: '',
-    state: '',
     phone: '',
     serviceCities: [] as string[],
-    serviceAreas: [] as string[]
+    serviceAreas: [] as string[],
+    experience: '',
+    experienceUnit: 'years',
+    totalJobs: '',
+    averageJobValue: '',
+    averageJobValueUnit: 'hour',
+    formations: [] as Array<{
+      id?: string,
+      institutionName: string,
+      area: string,
+      certificateUrl?: string,
+      startDate?: string,
+      endDate?: string
+    }>
   })
   const [loading, setLoading] = useState(true)
 
@@ -61,19 +93,29 @@ export default function PrestadorDashboard() {
       setProfileData({
         name: user.name || '',
         description: user.providerProfile?.description || '',
-        city: user.providerProfile?.city || '',
-        state: user.providerProfile?.state || '',
         phone: user.phone || '',
         serviceCities: (() => {
           try {
-            return user.providerProfile?.serviceCities ? JSON.parse(user.providerProfile.serviceCities) : []
+            const cities = user.providerProfile?.serviceCities ? JSON.parse(user.providerProfile.serviceCities) : []
+            return Array.isArray(cities) ? cities : []
           } catch { return [] }
         })(),
         serviceAreas: (() => {
           try {
-            return user.providerProfile?.serviceAreas ? JSON.parse(user.providerProfile.serviceAreas) : []
+            const areas = user.providerProfile?.serviceAreas ? JSON.parse(user.providerProfile.serviceAreas) : []
+            return Array.isArray(areas) ? areas : []
           } catch { return [] }
-        })()
+        })(),
+        experience: user.providerProfile?.experience?.toString() || '',
+        experienceUnit: user.providerProfile?.experienceUnit || 'years',
+        totalJobs: user.providerProfile?.totalJobs?.toString() || '',
+        averageJobValue: user.providerProfile?.averageJobValue?.toString() || '',
+        averageJobValueUnit: user.providerProfile?.averageJobValueUnit || 'hour',
+        formations: user.providerProfile?.formations?.map((formation: any) => ({
+          ...formation,
+          startDate: formation.startDate ? new Date(formation.startDate).toISOString().split('T')[0] : '',
+          endDate: formation.endDate ? new Date(formation.endDate).toISOString().split('T')[0] : ''
+        })) || []
       })
       loadPosts()
     }
@@ -81,7 +123,9 @@ export default function PrestadorDashboard() {
 
   const loadPosts = async () => {
     try {
-      const response = await fetch('/api/posts')
+      const response = await fetch('/api/posts', {
+        credentials: 'include'
+      })
       if (response.ok) {
         const { posts } = await response.json()
         const userPosts = posts.filter((post: any) => post.authorId === user?.id)
@@ -107,6 +151,7 @@ export default function PrestadorDashboard() {
       const response = await fetch('/api/posts', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify(newPost)
       })
       if (response.ok) {
@@ -125,6 +170,35 @@ export default function PrestadorDashboard() {
     }
   }
 
+  const addFormation = () => {
+    setProfileData(prev => ({
+      ...prev,
+      formations: [...prev.formations, {
+        institutionName: '',
+        area: '',
+        certificateUrl: '',
+        startDate: '',
+        endDate: ''
+      }]
+    }))
+  }
+
+  const removeFormation = (index: number) => {
+    setProfileData(prev => ({
+      ...prev,
+      formations: prev.formations.filter((_, i) => i !== index)
+    }))
+  }
+
+  const updateFormation = (index: number, field: string, value: string) => {
+    setProfileData(prev => ({
+      ...prev,
+      formations: prev.formations.map((formation, i) => 
+        i === index ? { ...formation, [field]: value } : formation
+      )
+    }))
+  }
+
   const handleUpdateProfile = async () => {
     try {
       const response = await fetch('/api/profile', {
@@ -132,14 +206,16 @@ export default function PrestadorDashboard() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...profileData,
-          serviceCities: JSON.stringify(profileData.serviceCities),
-          serviceAreas: JSON.stringify(profileData.serviceAreas)
+          experience: profileData.experience ? parseInt(profileData.experience) : null,
+          totalJobs: profileData.totalJobs ? parseInt(profileData.totalJobs) : null,
+          averageJobValue: profileData.averageJobValue ? parseFloat(profileData.averageJobValue) : null
         })
       })
 
       if (response.ok) {
         setIsEditProfileOpen(false)
         toast.success('Perfil atualizado com sucesso!')
+        // Recarregar dados do usuário
         window.location.reload()
       } else {
         const error = await response.json()
@@ -205,7 +281,7 @@ export default function PrestadorDashboard() {
                     Novo Post
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="max-w-2xl">
+                <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
                   <DialogHeader>
                     <DialogTitle>Criar Nova Publicação</DialogTitle>
                   </DialogHeader>
@@ -264,7 +340,6 @@ export default function PrestadorDashboard() {
                   </form>
                 </DialogContent>
               </Dialog>
-              <Button variant="ghost" size="sm"><Settings className="w-4 h-4" /></Button>
               <Button variant="ghost" size="sm" onClick={logout}><LogOut className="w-4 h-4" /></Button>
             </div>
           </div>
@@ -280,7 +355,12 @@ export default function PrestadorDashboard() {
                 <CardTitle>{user.name}</CardTitle>
                 <CardDescription className="flex items-center justify-center">
                   <MapPin className="w-4 h-4 mr-1" />
-                  {user.providerProfile?.city}, {user.providerProfile?.state}
+                  {(() => {
+                    try {
+                      const cities = user.providerProfile?.serviceCities ? JSON.parse(user.providerProfile.serviceCities) : []
+                      return cities.length > 0 ? cities.map((city: string) => formatText(city)).join(', ') : 'Nenhuma cidade selecionada'
+                    } catch { return 'Nenhuma cidade selecionada' }
+                  })()}
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -306,15 +386,96 @@ export default function PrestadorDashboard() {
                   <span className="text-sm text-gray-600">Avaliações</span>
                   <span className="font-semibold">{user.providerProfile?.totalReviews || 0}</span>
                 </div>
+                {user.providerProfile?.experience && (
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-gray-600">Experiência</span>
+                    <span className="font-semibold">{user.providerProfile.experience} {user.providerProfile.experienceUnit === 'years' ? 'anos' : 'meses'}</span>
+                  </div>
+                )}
+                {user.providerProfile?.averageJobValue && (
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-gray-600">Valor Médio</span>
+                    <span className="font-semibold">R$ {user.providerProfile.averageJobValue}/{user.providerProfile.averageJobValueUnit === 'hour' ? 'hora' : 'dia'}</span>
+                  </div>
+                )}
                 {user.providerProfile?.description && (
                   <p className="text-sm text-gray-600">{user.providerProfile.description}</p>
+                )}
+
+                {/* Áreas de Atuação */}
+                {(() => {
+                  try {
+                    const areas = user.providerProfile?.serviceAreas ? JSON.parse(user.providerProfile.serviceAreas) : []
+                    return areas.length > 0 && (
+                      <div className="space-y-2">
+                        <span className="text-sm font-medium text-gray-600">Áreas de Atuação:</span>
+                        <div className="flex flex-wrap gap-1">
+                          {areas.map((area: string, index: number) => (
+                            <Badge key={index} variant="secondary" className="text-xs">
+                              {formatText(area)}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    )
+                  } catch { return null }
+                })()}
+
+                {/* Formações */}
+                {user.providerProfile?.formations && user.providerProfile.formations.length > 0 && (
+                  <div className="mt-4">
+                    <h4 className="text-sm font-medium text-gray-700 mb-2">Formações</h4>
+                    <div className="space-y-2">
+                      {user.providerProfile.formations.map((formation: any, index: number) => (
+                        <div key={index} className="text-xs text-gray-600 bg-gray-50 p-3 rounded border">
+                          <div className="font-medium">{formation.institutionName}</div>
+                          <div className="mb-1">{formation.area}</div>
+                          {formation.startDate && formation.endDate && (
+                            <div className="text-gray-500 mb-2">
+                              {new Date(formation.startDate).toLocaleDateString('pt-BR')} - {new Date(formation.endDate).toLocaleDateString('pt-BR')}
+                            </div>
+                          )}
+                          {formation.certificateUrl && (
+                            <div className="mt-2 pt-2 border-t border-gray-200">
+                              <div className="flex items-center gap-2">
+                                <FileText className="w-3 h-3 text-blue-600" />
+                                <span className="text-xs text-blue-600 font-medium">Certificado disponível</span>
+                              </div>
+                              <div className="flex gap-1 mt-1">
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  size="sm"
+                                  className="h-6 px-2 text-xs"
+                                  onClick={() => window.open(formation.certificateUrl, '_blank')}
+                                >
+                                  <ExternalLink className="w-3 h-3 mr-1" />
+                                  Ver
+                                </Button>
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  size="sm"
+                                  className="h-6 px-2 text-xs"
+                                  onClick={() => window.open(formation.certificateUrl, '_blank', 'download')}
+                                >
+                                  <Download className="w-3 h-3 mr-1" />
+                                  Baixar
+                                </Button>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 )}
 
                 <Dialog open={isEditProfileOpen} onOpenChange={setIsEditProfileOpen}>
                   <DialogTrigger asChild>
                     <Button variant="outline" className="w-full"><Edit className="w-4 h-4 mr-2" />Editar Perfil</Button>
                   </DialogTrigger>
-                  <DialogContent>
+                  <DialogContent className="max-h-[90vh] overflow-y-auto">
                     <DialogHeader>
                       <DialogTitle>Editar Perfil</DialogTitle>
                     </DialogHeader>
@@ -344,24 +505,6 @@ export default function PrestadorDashboard() {
                           rows={3}
                         />
                       </div>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                          <Label htmlFor="profileCity">Cidade Base</Label>
-                          <Input
-                            id="profileCity"
-                            value={profileData.city}
-                            onChange={(e) => setProfileData(prev => ({ ...prev, city: e.target.value }))}
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <Label htmlFor="profileState">Estado</Label>
-                          <Input
-                            id="profileState"
-                            value={profileData.state}
-                            onChange={(e) => setProfileData(prev => ({ ...prev, state: e.target.value }))}
-                          />
-                        </div>
-                      </div>
 
                       {user.providerProfile && (
                         <>
@@ -384,6 +527,199 @@ export default function PrestadorDashboard() {
                           </div>
                         </>
                       )}
+                      <div className="space-y-2">
+                        <Label htmlFor="profilePhone">Telefone</Label>
+                        <Input
+                          id="profilePhone"
+                          value={profileData.phone}
+                          onChange={(e) => setProfileData(prev => ({ ...prev, phone: e.target.value }))}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="profileDescription">Descrição</Label>
+                        <Textarea
+                          id="profileDescription"
+                          value={profileData.description}
+                          onChange={(e) => setProfileData(prev => ({ ...prev, description: e.target.value }))}
+                          rows={3}
+                        />
+                      </div>
+
+                      {/* Experiência */}
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="experience">Tempo de Experiência</Label>
+                          <Input
+                            id="experience"
+                            type="number"
+                            value={profileData.experience}
+                            onChange={(e) => setProfileData(prev => ({ ...prev, experience: e.target.value }))}
+                            placeholder="Ex: 5"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="experienceUnit">Unidade</Label>
+                          <Select value={profileData.experienceUnit} onValueChange={(value) => setProfileData(prev => ({ ...prev, experienceUnit: value }))}>
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="months">Meses</SelectItem>
+                              <SelectItem value="years">Anos</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+
+                      {/* Trabalhos Realizados */}
+                      <div className="space-y-2">
+                        <Label htmlFor="totalJobs">Quantidade de Trabalhos Realizados</Label>
+                        <Input
+                          id="totalJobs"
+                          type="number"
+                          value={profileData.totalJobs}
+                          onChange={(e) => setProfileData(prev => ({ ...prev, totalJobs: e.target.value }))}
+                          placeholder="Ex: 150"
+                        />
+                      </div>
+
+                      {/* Valor Médio do Trabalho */}
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="averageJobValue">Valor Médio do Trabalho</Label>
+                          <Input
+                            id="averageJobValue"
+                            type="number"
+                            step="0.01"
+                            value={profileData.averageJobValue}
+                            onChange={(e) => setProfileData(prev => ({ ...prev, averageJobValue: e.target.value }))}
+                            placeholder="Ex: 250.00"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="averageJobValueUnit">Por</Label>
+                          <Select value={profileData.averageJobValueUnit} onValueChange={(value) => setProfileData(prev => ({ ...prev, averageJobValueUnit: value }))}>
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="hour">Hora</SelectItem>
+                              <SelectItem value="day">Dia</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+
+                      {/* Formações */}
+                      <div className="space-y-4">
+                        <div className="flex items-center justify-between">
+                          <Label>Formações</Label>
+                          <Button type="button" variant="outline" size="sm" onClick={addFormation}>
+                            <Plus className="w-4 h-4 mr-2" />
+                            Adicionar Formação
+                          </Button>
+                        </div>
+                        
+                        {profileData.formations.map((formation, index) => (
+                          <div key={index} className="border rounded-lg p-4 space-y-3">
+                            <div className="flex items-center justify-between">
+                              <h4 className="font-medium">Formação {index + 1}</h4>
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={() => removeFormation(index)}
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            </div>
+                            
+                            <div className="grid grid-cols-2 gap-3">
+                              <div className="space-y-2">
+                                <Label>Nome da Instituição</Label>
+                                <Input
+                                  value={formation.institutionName}
+                                  onChange={(e) => updateFormation(index, 'institutionName', e.target.value)}
+                                  placeholder="Ex: SENAI, IFMG, etc."
+                                />
+                              </div>
+                              <div className="space-y-2">
+                                <Label>Área de Formação</Label>
+                                <Input
+                                  value={formation.area}
+                                  onChange={(e) => updateFormation(index, 'area', e.target.value)}
+                                  placeholder="Ex: Elétrica, Encanamento, etc."
+                                />
+                              </div>
+                            </div>
+                            
+                            <div className="space-y-2">
+                              <Label>URL do Certificado (Opcional)</Label>
+                              <Input
+                                value={formation.certificateUrl || ''}
+                                onChange={(e) => updateFormation(index, 'certificateUrl', e.target.value)}
+                                placeholder="Link para o certificado"
+                              />
+                              {formation.certificateUrl && (
+                                <div className="mt-2">
+                                  <Label className="text-sm text-muted-foreground">Pré-visualização do Certificado:</Label>
+                                  <div className="mt-1 border rounded-lg p-3 bg-gray-50">
+                                    <div className="flex items-center gap-2 mb-2">
+                                      <FileText className="w-4 h-4 text-blue-600" />
+                                      <span className="text-sm font-medium">Certificado Anexado</span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                      <Button
+                                        type="button"
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => window.open(formation.certificateUrl, '_blank')}
+                                      >
+                                        <ExternalLink className="w-3 h-3 mr-1" />
+                                        Visualizar
+                                      </Button>
+                                      <Button
+                                        type="button"
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => window.open(formation.certificateUrl, '_blank', 'download')}
+                                      >
+                                        <Download className="w-3 h-3 mr-1" />
+                                        Baixar
+                                      </Button>
+                                    </div>
+                                    <div className="mt-2 text-xs text-muted-foreground">
+                                      URL: {formation.certificateUrl.length > 50 ? 
+                                        `${formation.certificateUrl.substring(0, 50)}...` : 
+                                        formation.certificateUrl
+                                      }
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                            
+                            <div className="grid grid-cols-2 gap-3">
+                              <div className="space-y-2">
+                                <Label>Data de Início (Opcional)</Label>
+                                <Input
+                                  type="date"
+                                  value={formation.startDate || ''}
+                                  onChange={(e) => updateFormation(index, 'startDate', e.target.value)}
+                                />
+                              </div>
+                              <div className="space-y-2">
+                                <Label>Data de Conclusão (Opcional)</Label>
+                                <Input
+                                  type="date"
+                                  value={formation.endDate || ''}
+                                  onChange={(e) => updateFormation(index, 'endDate', e.target.value)}
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
 
                       <div className="flex justify-end space-x-2">
                         <Button variant="outline" onClick={() => setIsEditProfileOpen(false)}>Cancelar</Button>
@@ -425,7 +761,24 @@ export default function PrestadorDashboard() {
                     </CardHeader>
                     {post.content && (
                       <CardContent>
-                        <p>{post.content}</p>
+                        <p className="mb-4">{post.content}</p>
+                      </CardContent>
+                    )}
+                    {post.images && post.images.length > 0 && (
+                      <CardContent className="pt-0">
+                        <div className="flex justify-center">
+                          <div className="grid grid-cols-2 gap-2 max-w-md">
+                            {post.images.map((image: string, index: number) => (
+                              <div key={index} className="relative aspect-square overflow-hidden rounded-lg">
+                                <img
+                                  src={image}
+                                  alt={`Imagem ${index + 1} do post`}
+                                  className="w-full h-full object-cover"
+                                />
+                              </div>
+                            ))}
+                          </div>
+                        </div>
                       </CardContent>
                     )}
                   </Card>

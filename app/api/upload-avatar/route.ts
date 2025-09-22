@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
 
     let decoded
     try {
-      decoded = jwt.verify(token, process.env.JWT_SECRET || 'fallback-secret-key') as { userId: string }
+      decoded = jwt.verify(token, 'fallback-secret-key') as { userId: string }
     } catch (jwtError) {
       console.error('JWT verification error:', jwtError)
       return NextResponse.json({ error: 'Token inválido' }, { status: 401 })

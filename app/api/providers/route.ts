@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { getOnlineStatus } from '@/lib/online-status'
 
 export async function GET(request: NextRequest) {
   try {
@@ -8,23 +9,8 @@ export async function GET(request: NextRequest) {
     const category = searchParams.get('category')
     const serviceArea = searchParams.get('serviceArea')
     
-    let whereClause: any = {}
-    
-    // Filter by service cities (JSON field)
-    if (city && city !== 'todas') {
-      whereClause.OR = [
-        { city: { contains: city } },
-        { serviceCities: { contains: city } }
-      ]
-    }
-    
-    // Filter by service areas (JSON field)
-    if (serviceArea && serviceArea !== 'all') {
-      whereClause.serviceAreas = { contains: serviceArea }
-    }
-    
-    const providers = await prisma.providerProfile.findMany({
-      where: whereClause,
+    // Buscar todos os providers primeiro
+    const allProviders = await prisma.providerProfile.findMany({
       include: {
         user: {
           select: {
@@ -32,7 +18,10 @@ export async function GET(request: NextRequest) {
             name: true,
             email: true,
             phone: true,
-            avatar: true
+            avatar: true,
+            lastLogin: true,
+            lastActivity: true,
+            lastLogout: true
           }
         },
         services: {
@@ -40,6 +29,7 @@ export async function GET(request: NextRequest) {
             category: true
           }
         },
+        formations: true,
         _count: {
           select: {
             receivedReviews: true
@@ -47,7 +37,60 @@ export async function GET(request: NextRequest) {
         }
       },
       orderBy: { rating: 'desc' },
-      take: 50
+      take: 100
+    })
+
+    // Filtrar no JavaScript para melhor controle dos campos JSON
+    let filteredProviders = allProviders
+
+    if (city && city !== 'todas') {
+      filteredProviders = filteredProviders.filter(provider => {
+        // Verificar cidade base
+        if (provider.city && provider.city.toLowerCase().includes(city.toLowerCase())) {
+          return true
+        }
+        
+        // Verificar cidades de serviço (JSON)
+        try {
+          const serviceCities = provider.serviceCities ? JSON.parse(provider.serviceCities) : []
+          if (Array.isArray(serviceCities)) {
+            return serviceCities.some((cityName: string) => 
+              cityName.toLowerCase().includes(city.toLowerCase())
+            )
+          }
+        } catch (e) {
+          // Ignorar erro de parse
+        }
+        
+        return false
+      })
+    }
+
+    if (serviceArea && serviceArea !== 'all') {
+      filteredProviders = filteredProviders.filter(provider => {
+        try {
+          const serviceAreas = provider.serviceAreas ? JSON.parse(provider.serviceAreas) : []
+          if (Array.isArray(serviceAreas)) {
+            return serviceAreas.some((area: string) => 
+              area.toLowerCase().includes(serviceArea.toLowerCase())
+            )
+          }
+        } catch (e) {
+          // Ignorar erro de parse
+        }
+        
+        return false
+      })
+    }
+
+    // Limitar resultados e adicionar status online
+    const providers = filteredProviders.slice(0, 50).map(provider => {
+      const onlineStatus = getOnlineStatus(provider.user.lastActivity, provider.user.lastLogin, provider.user.lastLogout)
+      return {
+        ...provider,
+        onlineStatus: onlineStatus.statusText,
+        isOnline: onlineStatus.isOnline
+      }
     })
 
     return NextResponse.json({ providers })

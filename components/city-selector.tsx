@@ -1,57 +1,107 @@
 "use client"
 
 import { useState } from "react"
-import { Check, ChevronsUpDown, X } from "lucide-react"
-import { cn } from "@/lib/utils"
+import { ChevronsUpDown, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Badge } from "@/components/ui/badge"
-import { Input } from "@/components/ui/input"
-import { ScrollArea } from "@/components/ui/scroll-area"
+import { SelectionModal } from "@/components/selection-modal"
 
-const BRAZILIAN_CITIES = [
-  { value: "sao-paulo-sp", label: "São Paulo, SP" },
-  { value: "rio-de-janeiro-rj", label: "Rio de Janeiro, RJ" },
+const MINAS_GERAIS_CITIES = [
   { value: "belo-horizonte-mg", label: "Belo Horizonte, MG" },
-  { value: "brasilia-df", label: "Brasília, DF" },
-  { value: "salvador-ba", label: "Salvador, BA" },
-  { value: "fortaleza-ce", label: "Fortaleza, CE" },
-  { value: "curitiba-pr", label: "Curitiba, PR" },
-  { value: "recife-pe", label: "Recife, PE" },
-  { value: "porto-alegre-rs", label: "Porto Alegre, RS" },
-  { value: "manaus-am", label: "Manaus, AM" },
   { value: "contagem-mg", label: "Contagem, MG" },
-  { value: "nova-lima-mg", label: "Nova Lima, MG" },
-  { value: "itabira-mg", label: "Itabira, MG" },
   { value: "uberlandia-mg", label: "Uberlândia, MG" },
   { value: "juiz-de-fora-mg", label: "Juiz de Fora, MG" },
+  { value: "betim-mg", label: "Betim, MG" },
+  { value: "montes-claros-mg", label: "Montes Claros, MG" },
+  { value: "ribeirao-das-neves-mg", label: "Ribeirão das Neves, MG" },
+  { value: "uberaba-mg", label: "Uberaba, MG" },
+  { value: "governador-valadares-mg", label: "Governador Valadares, MG" },
+  { value: "ipatinga-mg", label: "Ipatinga, MG" },
+  { value: "santa-luzia-mg", label: "Santa Luzia, MG" },
+  { value: "sete-lagoas-mg", label: "Sete Lagoas, MG" },
+  { value: "divinopolis-mg", label: "Divinópolis, MG" },
+  { value: "ibirite-mg", label: "Ibirité, MG" },
+  { value: "sabara-mg", label: "Sabará, MG" },
+  { value: "ribeirao-das-neves-mg", label: "Ribeirão das Neves, MG" },
+  { value: "varginha-mg", label: "Varginha, MG" },
+  { value: "pouso-alegre-mg", label: "Pouso Alegre, MG" },
+  { value: "ubá-mg", label: "Ubá, MG" },
+  { value: "passos-mg", label: "Passos, MG" },
+  { value: "consolacao-mg", label: "Consolação, MG" },
+  { value: "patos-de-minas-mg", label: "Patos de Minas, MG" },
+  { value: "araxa-mg", label: "Araxá, MG" },
+  { value: "lagoa-santa-mg", label: "Lagoa Santa, MG" },
+  { value: "itapecerica-mg", label: "Itapecerica, MG" },
+  { value: "nova-serra-mg", label: "Nova Serrana, MG" },
+  { value: "formiga-mg", label: "Formiga, MG" },
+  { value: "paracatu-mg", label: "Paracatu, MG" },
+  { value: "timoteo-mg", label: "Timóteo, MG" },
+  { value: "coronel-fabriciano-mg", label: "Coronel Fabriciano, MG" },
+  { value: "santa-barbara-mg", label: "Santa Bárbara, MG" },
+  { value: "itauna-mg", label: "Itaúna, MG" },
+  { value: "sao-joao-del-rei-mg", label: "São João del Rei, MG" },
+  { value: "lavras-mg", label: "Lavras, MG" },
+  { value: "pocos-de-caldas-mg", label: "Poços de Caldas, MG" },
+  { value: "vazante-mg", label: "Vazante, MG" },
+  { value: "matozinhos-mg", label: "Matozinhos, MG" },
+  { value: "sabara-mg", label: "Sabará, MG" },
+  { value: "nova-lima-mg", label: "Nova Lima, MG" },
+  { value: "caete-mg", label: "Caeté, MG" },
+  { value: "rio-acima-mg", label: "Rio Acima, MG" },
+  { value: "raposos-mg", label: "Raposos, MG" },
+  { value: "santa-barbara-mg", label: "Santa Bárbara, MG" },
+  { value: "barroso-mg", label: "Barroso, MG" },
+  { value: "congonhas-mg", label: "Congonhas, MG" },
   { value: "ouro-preto-mg", label: "Ouro Preto, MG" },
-  { value: "diamantina-mg", label: "Diamantina, MG" },
-  { value: "caxias-do-sul-rs", label: "Caxias do Sul, RS" },
-  { value: "gramado-rs", label: "Gramado, RS" },
-  { value: "petropolis-rj", label: "Petrópolis, RJ" },
-  { value: "niteroi-rj", label: "Niterói, RJ" },
-  { value: "campinas-sp", label: "Campinas, SP" },
-  { value: "ribeirao-preto-sp", label: "Ribeirão Preto, SP" },
-  { value: "sao-jose-dos-campos-sp", label: "São José dos Campos, SP" },
-  { value: "goiania-go", label: "Goiânia, GO" },
-  { value: "cuiaba-mt", label: "Cuiabá, MT" },
-  { value: "palmas-to", label: "Palmas, TO" },
-  { value: "florianopolis-sc", label: "Florianópolis, SC" },
-  { value: "joinville-sc", label: "Joinville, SC" },
-  { value: "vitoria-es", label: "Vitória, ES" },
-  { value: "campo-grande-ms", label: "Campo Grande, MS" },
-  { value: "teresina-pi", label: "Teresina, PI" },
-  { value: "maceio-al", label: "Maceió, AL" },
-  { value: "aracaju-se", label: "Aracaju, SE" },
-  { value: "natal-rn", label: "Natal, RN" },
-  { value: "joao-pessoa-pb", label: "João Pessoa, PB" },
-  { value: "sao-luis-ma", label: "São Luís, MA" },
-  { value: "belem-pa", label: "Belém, PA" },
-  { value: "porto-velho-ro", label: "Porto Velho, RO" },
-  { value: "rio-branco-ac", label: "Rio Branco, AC" },
-  { value: "boa-vista-rr", label: "Boa Vista, RR" },
-  { value: "macapa-ap", label: "Macapá, AP" },
+  { value: "mariana-mg", label: "Mariana, MG" },
+  { value: "ponte-nova-mg", label: "Ponte Nova, MG" },
+  { value: "caratinga-mg", label: "Caratinga, MG" },
+  { value: "manhuacu-mg", label: "Manhuaçu, MG" },
+  { value: "muriaé-mg", label: "Muriaé, MG" },
+  { value: "leopoldina-mg", label: "Leopoldina, MG" },
+  { value: "cataguases-mg", label: "Cataguases, MG" },
+  { value: "visconde-do-rio-branco-mg", label: "Visconde do Rio Branco, MG" },
+  { value: "uba-mg", label: "Ubá, MG" },
+  { value: "sao-joao-nepomuceno-mg", label: "São João Nepomuceno, MG" },
+  { value: "barbacena-mg", label: "Barbacena, MG" },
+  { value: "sao-lourenco-mg", label: "São Lourenço, MG" },
+  { value: "caxambu-mg", label: "Caxambu, MG" },
+  { value: "baependi-mg", label: "Baependi, MG" },
+  { value: "cambuquira-mg", label: "Cambuquira, MG" },
+  { value: "lambari-mg", label: "Lambari, MG" },
+  { value: "carmo-da-cachoeira-mg", label: "Carmo da Cachoeira, MG" },
+  { value: "três-corações-mg", label: "Três Corações, MG" },
+  { value: "eloi-mendes-mg", label: "Elói Mendes, MG" },
+  { value: "paraisopolis-mg", label: "Paraisópolis, MG" },
+  { value: "cambui-mg", label: "Cambuí, MG" },
+  { value: "bom-sucesso-mg", label: "Bom Sucesso, MG" },
+  { value: "lagoa-dourada-mg", label: "Lagoa Dourada, MG" },
+  { value: "sao-tiago-mg", label: "São Tiago, MG" },
+  { value: "sao-joao-del-rei-mg", label: "São João del Rei, MG" },
+  { value: "tiradentes-mg", label: "Tiradentes, MG" },
+  { value: "santa-cruz-de-minas-mg", label: "Santa Cruz de Minas, MG" },
+  { value: "coronel-xavier-chaves-mg", label: "Coronel Xavier Chaves, MG" },
+  { value: "ritapolis-mg", label: "Ritápolis, MG" },
+  { value: "sao-vicente-de-minas-mg", label: "São Vicente de Minas, MG" },
+  { value: "carrancas-mg", label: "Carrancas, MG" },
+  { value: "luminarias-mg", label: "Luminárias, MG" },
+  { value: "ingai-mg", label: "Ingaí, MG" },
+  { value: "carmo-da-mata-mg", label: "Carmo da Mata, MG" },
+  { value: "oliveira-mg", label: "Oliveira, MG" },
+  { value: "santo-antonio-do-amparo-mg", label: "Santo Antônio do Amparo, MG" },
+  { value: "sao-francisco-de-paula-mg", label: "São Francisco de Paula, MG" },
+  { value: "candeias-mg", label: "Candeias, MG" },
+  { value: "cristina-mg", label: "Cristina, MG" },
+  { value: "dom-vicoso-mg", label: "Dom Viçoso, MG" },
+  { value: "sao-sebastiao-do-rio-verde-mg", label: "São Sebastião do Rio Verde, MG" },
+  { value: "carmo-da-mata-mg", label: "Carmo da Mata, MG" },
+  { value: "oliveira-mg", label: "Oliveira, MG" },
+  { value: "santo-antonio-do-amparo-mg", label: "Santo Antônio do Amparo, MG" },
+  { value: "sao-francisco-de-paula-mg", label: "São Francisco de Paula, MG" },
+  { value: "candeias-mg", label: "Candeias, MG" },
+  { value: "cristina-mg", label: "Cristina, MG" },
+  { value: "dom-vicoso-mg", label: "Dom Viçoso, MG" },
+  { value: "sao-sebastiao-do-rio-verde-mg", label: "São Sebastião do Rio Verde, MG" }
 ]
 
 interface CitySelectorProps {
@@ -61,97 +111,60 @@ interface CitySelectorProps {
 }
 
 export function CitySelector({ selectedCities, onCitiesChange, placeholder = "Selecione as cidades..." }: CitySelectorProps) {
-  const [open, setOpen] = useState(false)
-  const [search, setSearch] = useState("")
-
-  const handleSelect = (cityValue: string) => {
-    if (selectedCities.includes(cityValue)) {
-      onCitiesChange(selectedCities.filter(c => c !== cityValue))
-    } else {
-      onCitiesChange([...selectedCities, cityValue])
-    }
-  }
-
-  const removeCity = (cityValue: string) => {
-    onCitiesChange(selectedCities.filter(c => c !== cityValue))
-  }
+  const [isModalOpen, setIsModalOpen] = useState(false)
 
   const getSelectedCityLabels = () => {
-    return selectedCities.map(value => {
-      const city = BRAZILIAN_CITIES.find(c => c.value === value)
-      return city ? city.label : value
+    if (!Array.isArray(selectedCities)) return []
+    return selectedCities.map(cityValue => {
+      const city = MINAS_GERAIS_CITIES.find(c => c.value === cityValue)
+      return city?.label || cityValue
     })
   }
 
-  const filteredCities = BRAZILIAN_CITIES.filter(city =>
-    city.label.toLowerCase().includes(search.toLowerCase())
-  )
+  const removeCity = (cityValue: string) => {
+    if (!Array.isArray(selectedCities)) return
+    onCitiesChange(selectedCities.filter(c => c !== cityValue))
+  }
 
   return (
-    <div className="space-y-2">
-      <Popover open={open} onOpenChange={setOpen}>
-        <PopoverTrigger asChild>
-          <Button
-            variant="outline"
-            role="combobox"
-            aria-expanded={open}
-            className="w-full justify-between h-auto min-h-10"
-          >
-            {selectedCities.length > 0 ? (
-              <div className="flex flex-wrap gap-1">
-                {getSelectedCityLabels().map((cityLabel, index) => (
-                  <Badge key={selectedCities[index]} variant="secondary" className="flex items-center gap-1">
-                    {cityLabel}
-                    <X
-                      className="h-3 w-3 cursor-pointer hover:bg-muted-foreground/20 rounded-full p-0.5"
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        removeCity(selectedCities[index])
-                      }}
-                    />
-                  </Badge>
-                ))}
-              </div>
-            ) : (
-              <span className="text-muted-foreground">{placeholder}</span>
-            )}
-            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent className="w-[400px] p-0" align="start" forceMount>
-          <div className="p-3 border-b">
-            <Input
-              placeholder="Buscar cidades..."
-              className="h-9"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
+    <>
+      <Button
+        variant="outline"
+        role="combobox"
+        className="w-full justify-between min-h-[40px] h-auto"
+        onClick={() => setIsModalOpen(true)}
+      >
+        {Array.isArray(selectedCities) && selectedCities.length > 0 ? (
+          <div className="flex gap-1 overflow-x-auto max-w-full selector-scroll" style={{ scrollbarWidth: 'thin', scrollbarColor: '#d1d5db #f3f4f6' }}>
+            {getSelectedCityLabels().map((cityLabel, index) => (
+              <Badge key={selectedCities[index]} variant="secondary" className="flex items-center gap-1 whitespace-nowrap flex-shrink-0 min-w-fit">
+                {cityLabel}
+                <X
+                  className="h-3 w-3 cursor-pointer hover:bg-muted-foreground/20 rounded-full p-0.5"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    removeCity(selectedCities[index])
+                  }}
+                />
+              </Badge>
+            ))}
           </div>
-          <ScrollArea className="max-h-64">
-            <div className="p-2">
-              {filteredCities.length === 0 ? (
-                <p className="text-sm text-muted-foreground p-2">Nenhuma cidade encontrada.</p>
-              ) : (
-                filteredCities.map((city) => (
-                  <div
-                    key={city.value}
-                    className="flex items-center p-2 cursor-pointer hover:bg-muted rounded-sm"
-                    onClick={() => handleSelect(city.value)}
-                  >
-                    <Check
-                      className={cn(
-                        "mr-2 h-4 w-4",
-                        selectedCities.includes(city.value) ? "opacity-100" : "opacity-0"
-                      )}
-                    />
-                    {city.label}
-                  </div>
-                ))
-              )}
-            </div>
-          </ScrollArea>
-        </PopoverContent>
-      </Popover>
-    </div>
+        ) : (
+          <span className="text-muted-foreground">{placeholder}</span>
+        )}
+        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+      </Button>
+
+      <SelectionModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        title="Selecionar Cidades"
+        placeholder="Selecione as cidades onde você atende..."
+        searchPlaceholder="Buscar cidades..."
+        options={MINAS_GERAIS_CITIES}
+        selectedValues={selectedCities || []}
+        onSelectionChange={onCitiesChange}
+      />
+    </>
   )
 }

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import bcrypt from 'bcryptjs'
+import { sendEmail, generateEmailTemplate } from '@/lib/email'
 
 export async function POST(request: NextRequest) {
   try {
@@ -81,6 +82,27 @@ export async function POST(request: NextRequest) {
           active: true
         }
       })
+    }
+
+    // Enviar email de boas-vindas
+    try {
+      const emailHtml = generateEmailTemplate('welcome', {
+        name: user.name
+      })
+
+      const emailResult = await sendEmail({
+        to: user.email,
+        subject: 'Bem-vindo ao UAIServiço!',
+        html: emailHtml
+      })
+
+      if (!emailResult.success) {
+        console.error('Erro ao enviar email de boas-vindas:', emailResult.error)
+        // Não falhar o registro se o email não for enviado
+      }
+    } catch (emailError) {
+      console.error('Erro ao enviar email de boas-vindas:', emailError)
+      // Não falhar o registro se o email não for enviado
     }
 
     const { password: _, ...userWithoutPassword } = user

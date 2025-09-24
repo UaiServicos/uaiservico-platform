@@ -248,8 +248,7 @@ export default function AvaliarPrestadorPage() {
               <CardContent className="p-6">
                 <h3 className="font-semibold mb-2">Posso editar minha avaliação depois de publicada?</h3>
                 <p className="text-muted-foreground">
-                  Sim, você pode editar sua avaliação dentro de 30 dias após a publicação. 
-                  Após esse período, a avaliação fica permanente.
+                  Não, essa opção ainda não está disponível.
                 </p>
               </CardContent>
             </Card>
@@ -257,8 +256,7 @@ export default function AvaliarPrestadorPage() {
               <CardContent className="p-6">
                 <h3 className="font-semibold mb-2">O prestador pode responder minha avaliação?</h3>
                 <p className="text-muted-foreground">
-                  Sim, os prestadores podem responder às avaliações para esclarecer situações 
-                  ou agradecer o feedback.
+                  Não, essa opção ainda não está disponível.
                 </p>
               </CardContent>
             </Card>

@@ -30,3 +30,6 @@ export async function GET(request: NextRequest) {
     }, { status: 500 })
   }
 }
+
+// Forçar rota dinâmica para evitar erro de build
+export const dynamic = 'force-dynamic'

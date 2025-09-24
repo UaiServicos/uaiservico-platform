@@ -10,13 +10,6 @@ interface EmailConfig {
 
 // Função para validar configurações de email
 function validateEmailConfig(): EmailConfig {
-  // Debug: mostrar todas as variáveis de ambiente relacionadas ao email
-  console.log('🔍 Debug - Variáveis de ambiente:')
-  console.log('SMTP_SERVICE:', process.env.SMTP_SERVICE)
-  console.log('SMTP_USER:', process.env.SMTP_USER ? '***configurado***' : 'não encontrado')
-  console.log('SMTP_PASS:', process.env.SMTP_PASS ? '***configurado***' : 'não encontrado')
-  console.log('SMTP_FROM:', process.env.SMTP_FROM)
-
   const config = {
     service: process.env.SMTP_SERVICE || 'gmail',
     user: process.env.SMTP_USER || '',
@@ -28,16 +21,28 @@ function validateEmailConfig(): EmailConfig {
   const hasUser = !!process.env.SMTP_USER
   const hasPass = !!process.env.SMTP_PASS
 
-  console.log('📊 Status da configuração:')
-  console.log('- SMTP_USER definido:', hasUser)
-  console.log('- SMTP_PASS definido:', hasPass)
-  console.log('- Modo produção:', hasUser && hasPass)
+  // Só mostrar logs em desenvolvimento
+  if (process.env.NODE_ENV === 'development') {
+    console.log('🔍 Debug - Variáveis de ambiente:')
+    console.log('SMTP_SERVICE:', process.env.SMTP_SERVICE)
+    console.log('SMTP_USER:', process.env.SMTP_USER ? '***configurado***' : 'não encontrado')
+    console.log('SMTP_PASS:', process.env.SMTP_PASS ? '***configurado***' : 'não encontrado')
+    console.log('SMTP_FROM:', process.env.SMTP_FROM)
+    console.log('📊 Status da configuração:')
+    console.log('- SMTP_USER definido:', hasUser)
+    console.log('- SMTP_PASS definido:', hasPass)
+    console.log('- Modo produção:', hasUser && hasPass)
+  }
 
   if (!hasUser || !hasPass) {
-    console.warn('⚠️ Configurações de email não encontradas. Usando modo de desenvolvimento.')
-    console.warn('📝 Para configurar email real, crie um arquivo .env com SMTP_USER e SMTP_PASS')
+    if (process.env.NODE_ENV === 'development') {
+      console.warn('⚠️ Configurações de email não encontradas. Usando modo de desenvolvimento.')
+      console.warn('📝 Para configurar email real, crie um arquivo .env com SMTP_USER e SMTP_PASS')
+    }
   } else {
-    console.log('✅ Configurações de email encontradas! Usando modo produção.')
+    if (process.env.NODE_ENV === 'development') {
+      console.log('✅ Configurações de email encontradas! Usando modo produção.')
+    }
   }
 
   return config
@@ -54,14 +59,18 @@ try {
   const hasPass = !!process.env.SMTP_PASS
   
   if (!hasUser || !hasPass) {
-    console.log('🔧 Usando modo de desenvolvimento para email')
+    if (process.env.NODE_ENV === 'development') {
+      console.log('🔧 Usando modo de desenvolvimento para email')
+    }
     transporter = nodemailer.createTransport({
       streamTransport: true,
       newline: 'unix',
       buffer: true
     })
   } else {
-    console.log('📧 Configurando transporter SMTP real...')
+    if (process.env.NODE_ENV === 'development') {
+      console.log('📧 Configurando transporter SMTP real...')
+    }
     transporter = nodemailer.createTransport({
       service: config.service,
       auth: {
@@ -79,11 +88,15 @@ try {
     // Verificar se a configuração está funcionando
     transporter.verify((error, success) => {
       if (error) {
-        console.error('❌ Erro na configuração de email:', error.message)
-        console.error('💡 Verifique se a senha de aplicativo está correta')
+        if (process.env.NODE_ENV === 'development') {
+          console.error('❌ Erro na configuração de email:', error.message)
+          console.error('💡 Verifique se a senha de aplicativo está correta')
+        }
       } else {
-        console.log('✅ Configuração de email verificada com sucesso')
-        console.log('📧 Pronto para enviar emails reais!')
+        if (process.env.NODE_ENV === 'development') {
+          console.log('✅ Configuração de email verificada com sucesso')
+          console.log('📧 Pronto para enviar emails reais!')
+        }
       }
     })
   }
@@ -137,9 +150,11 @@ export async function sendEmail(options: EmailOptions): Promise<{ success: boole
     const hasPass = !!process.env.SMTP_PASS
     
     if (!hasUser || !hasPass) {
-      console.log(`🔧 [MODO DESENVOLVIMENTO] Simulando envio de email para: ${options.to}`)
-      console.log(`📧 Assunto: ${options.subject}`)
-      console.log(`📝 Conteúdo: ${options.html.substring(0, 100)}...`)
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`🔧 [MODO DESENVOLVIMENTO] Simulando envio de email para: ${options.to}`)
+        console.log(`📧 Assunto: ${options.subject}`)
+        console.log(`📝 Conteúdo: ${options.html.substring(0, 100)}...`)
+      }
       
       return { 
         success: true, 
@@ -147,10 +162,14 @@ export async function sendEmail(options: EmailOptions): Promise<{ success: boole
       }
     }
 
-    console.log(`📧 Enviando email para: ${options.to}`)
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`📧 Enviando email para: ${options.to}`)
+    }
     const result = await transporter.sendMail(mailOptions)
     
-    console.log(`✅ Email enviado com sucesso! ID: ${result.messageId}`)
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`✅ Email enviado com sucesso! ID: ${result.messageId}`)
+    }
     return { 
       success: true, 
       messageId: result.messageId 
@@ -407,12 +426,12 @@ export function generateEmailTemplate(type: 'welcome' | 'password-reset', data: 
                   <li>Avaliar e ser avaliado por outros usuários</li>
                   <li>Gerenciar todos os seus serviços em um só lugar</li>
                   <li>Acompanhar o status dos seus pedidos em tempo real</li>
-                </ul>
+              </ul>
               </div>
               
               <p>Para começar a usar nossa plataforma, faça login em sua conta:</p>
               <div style="text-align: center;">
-                <a href="${baseUrl}/login" class="button">Fazer Login</a>
+              <a href="${baseUrl}/login" class="button">Fazer Login</a>
               </div>
               
               <p style="margin-top: 30px; font-size: 14px; color: #6c757d;">

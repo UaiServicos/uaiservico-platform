@@ -16,8 +16,7 @@ export function getOnlineStatus(lastActivity: Date | null, lastLogin: Date | nul
   if (!lastActivity && !lastLogin) {
     return {
       isOnline: false,
-      statusText: 'Nunca logado',
-      lastSeen: null
+      statusText: 'Nunca logado'
     }
   }
 
@@ -45,7 +44,6 @@ export function getOnlineStatus(lastActivity: Date | null, lastLogin: Date | nul
     return {
       isOnline: true,
       statusText: 'Online agora',
-      lastSeen: referenceDate
     }
   }
 
@@ -55,7 +53,6 @@ export function getOnlineStatus(lastActivity: Date | null, lastLogin: Date | nul
   return {
     isOnline: false,
     statusText: `Ausente há ${timeOffline}`,
-    lastSeen: referenceDate
   }
 }
 

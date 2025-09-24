@@ -72,16 +72,18 @@ export async function POST(request: NextRequest) {
       }
 
       // Criar serviço do prestador
-      await prisma.providerService.create({
-        data: {
-          providerId: user.providerProfile.id,
-          categoryId: category.id,
-          name: profileData.serviceType,
-          description: profileData.description || `Serviços de ${profileData.serviceType}`,
-          price: profileData.price ? parseFloat(profileData.price.replace(/[^\d.,]/g, '').replace(',', '.')) : null,
-          active: true
-        }
-      })
+      if (user.providerProfile) {
+        await prisma.providerService.create({
+          data: {
+            providerId: user.providerProfile.id,
+            categoryId: category.id,
+            title: profileData.serviceType,
+            description: profileData.description || `Serviços de ${profileData.serviceType}`,
+            price: profileData.price ? parseFloat(profileData.price.replace(/[^\d.,]/g, '').replace(',', '.')) : null,
+            active: true
+          }
+        })
+      }
     }
 
     // Enviar email de boas-vindas

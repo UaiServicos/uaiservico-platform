@@ -1,0 +1,8 @@
+# Ignorar arquivos desnecessários no Vercel
+prisma/dev.db
+prisma/dev.db-journal
+*.log
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local

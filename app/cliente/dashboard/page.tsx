@@ -288,7 +288,7 @@ export default function ClientDashboardPage() {
                       </div>
 
                       <p className="text-sm text-muted-foreground mb-3">
-                        {provider.description || 'Prestador de serviços qualificado'}
+                        Prestador de serviços qualificado
                       </p>
 
                       <div className="flex items-center gap-2 mb-3">

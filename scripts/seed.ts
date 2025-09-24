@@ -119,8 +119,7 @@ async function main() {
       await prisma.post.create({
         data: {
           ...postData,
-          authorId: user.id,
-          likes: Math.floor(Math.random() * 50) + 5
+          authorId: user.id
         }
       })
     }

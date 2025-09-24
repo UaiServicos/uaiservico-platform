@@ -1,0 +1,56 @@
+# Copie este conteúdo para um arquivo chamado .env na raiz do projeto
+
+# Database
+DATABASE_URL="file:./dev.db"
+
+# JWT Secret
+JWT_SECRET="fallback-secret-key"
+
+# Email Configuration (Configuração completa para envio de emails)
+SMTP_SERVICE="gmail"
+SMTP_USER="seu-email@gmail.com"
+SMTP_PASS="sua-senha-de-aplicativo"
+SMTP_FROM="UAIServiço <seu-email@gmail.com>"
+
+# Application URL
+NEXT_PUBLIC_BASE_URL="http://localhost:3000"
+
+# ========================================
+# INSTRUÇÕES DE CONFIGURAÇÃO:
+# ========================================
+# 1. Crie um arquivo chamado .env na pasta raiz
+# 2. Copie o conteúdo acima para o arquivo .env
+# 3. Configure o email:
+#    - Substitua "seu-email@gmail.com" pelo seu email
+#    - Para Gmail: Use uma "Senha de Aplicativo" (não sua senha normal)
+#    - Para outros provedores: Use sua senha normal
+# 4. Salve o arquivo
+# 5. Reinicie o servidor (npm run dev)
+# 6. Teste a configuração: GET /api/test-email?action=test-config
+
+# ========================================
+# SERVIÇOS SUPORTADOS:
+# ========================================
+# Gmail: SMTP_SERVICE="gmail" (use senha de aplicativo)
+# Outlook: SMTP_SERVICE="hotmail"
+# Yahoo: SMTP_SERVICE="yahoo"
+# iCloud: SMTP_SERVICE="icloud"
+# Zoho: SMTP_SERVICE="zoho"
+# Custom SMTP: Configure manualmente com host/porta
+
+# ========================================
+# COMO CRIAR SENHA DE APLICATIVO (GMAIL):
+# ========================================
+# 1. Acesse: https://myaccount.google.com/security
+# 2. Ative a "Verificação em duas etapas" se não estiver ativa
+# 3. Vá em "Senhas de aplicativo"
+# 4. Selecione "Outro (nome personalizado)"
+# 5. Digite "UAIServiço Platform"
+# 6. Copie a senha gerada e use em SMTP_PASS
+
+# ========================================
+# TESTANDO A CONFIGURAÇÃO:
+# ========================================
+# 1. Testar configuração: GET /api/test-email?action=test-config
+# 2. Enviar email teste: GET /api/test-email?action=send-test&email=seu@email.com
+

@@ -6,6 +6,9 @@ DATABASE_URL="postgresql://username:password@localhost:5432/uaiservico_db"
 # JWT Secret
 JWT_SECRET="fallback-secret-key"
 
+# Seed Secret (para popular banco de produção)
+SEED_SECRET="seed-secret-key"
+
 # Email Configuration (Configuração completa para envio de emails)
 SMTP_SERVICE="gmail"
 SMTP_USER="seu-email@gmail.com"

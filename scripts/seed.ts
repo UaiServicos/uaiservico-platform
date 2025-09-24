@@ -68,8 +68,10 @@ async function main() {
   ]
 
   for (const providerData of providers) {
-    const user = await prisma.user.create({
-      data: {
+    const user = await prisma.user.upsert({
+      where: { email: providerData.email },
+      update: {},
+      create: {
         name: providerData.name,
         email: providerData.email,
         phone: providerData.phone,
@@ -148,8 +150,10 @@ async function main() {
   ]
 
   for (const clientData of clients) {
-    await prisma.user.create({
-      data: {
+    await prisma.user.upsert({
+      where: { email: clientData.email },
+      update: {},
+      create: {
         name: clientData.name,
         email: clientData.email,
         phone: clientData.phone,

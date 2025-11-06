@@ -3,17 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "build": "prisma generate && next build",
     "dev": "next dev",
-    "lint": "next lint",
+    "build": "next build",
     "start": "next start",
-    "postinstall": "prisma generate",
-    "vercel-build": "prisma generate && next build",
-    "db:migrate": "prisma migrate dev",
-    "db:deploy": "prisma migrate deploy",
-    "db:studio": "prisma studio",
-    "db:seed": "tsx scripts/seed.ts",
-    "db:seed:production": "node scripts/seed-production.js"
+    "lint": "next lint"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",

@@ -1,8 +1,0 @@
-DATABASE_URL=postgresql://neondb_owner:npg_PZBt0AxFTaY5@ep-polished-grass-acohj4n6-pooler.sa-east-1.aws.neon.tech/neondb?sslmode=require
-JWT_SECRET="e3f2c9d8a5f54bcb1c20f3e0a9d9b7f08c92a1cbb5b47d1b6f13d9a3f5a2e3d4"
-NEXTAUTH_SECRET="8f4e7a9b3c2d1f5a0e6d9c3a7b8e2f1c6a4d9b2f7c1e0a8d3f5c9a2b1d7e4f6"
-NEXTAUTH_URL="http://localhost:3000"
-SMTP_USER="noreply.uaiservicos@gmail.com"
-SMTP_PASS="mhsj mgzh uxgr aafy"
-SMTP_SERVICE="gmail"
-SMTP_FROM="UAIServiço <noreply.uaiservicos@gmail.com>"

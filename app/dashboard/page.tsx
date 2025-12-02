@@ -554,6 +554,65 @@ export default function DashboardPage() {
                     </Button>
                   </CardContent>
                 </Card>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Configurações da Conta</CardTitle>
+                    <CardDescription>Gerencie o status da sua conta</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <Button 
+                      variant={user.clientProfile?.active ? "destructive" : "default"}
+                      className="w-full"
+                      onClick={async () => {
+                        try {
+                          const response = await fetch('/api/account/toggle-status', { method: 'PATCH' })
+                          if (response.ok) {
+                            const { active, message } = await response.json()
+                            toast.success(message)
+                            window.location.reload()
+                          } else {
+                            toast.error('Erro ao alterar status')
+                          }
+                        } catch (error) {
+                          toast.error('Erro ao alterar status')
+                        }
+                      }}
+                    >
+                      {user.clientProfile?.active ? 'Desativar Perfil' : 'Ativar Perfil'}
+                    </Button>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-destructive">Zona de Perigo</CardTitle>
+                    <CardDescription>Ações irreversíveis da conta</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <Button 
+                      variant="destructive" 
+                      className="w-full"
+                      onClick={async () => {
+                        if (confirm('Tem certeza que deseja deletar sua conta? Esta ação não pode ser desfeita.')) {
+                          try {
+                            const response = await fetch('/api/account/delete', { method: 'DELETE' })
+                            if (response.ok) {
+                              toast.success('Conta deletada com sucesso')
+                              router.push('/')
+                            } else {
+                              toast.error('Erro ao deletar conta')
+                            }
+                          } catch (error) {
+                            toast.error('Erro ao deletar conta')
+                          }
+                        }
+                      }}
+                    >
+                      Deletar Conta
+                    </Button>
+                  </CardContent>
+                </Card>
               </div>
             )}
           </TabsContent>

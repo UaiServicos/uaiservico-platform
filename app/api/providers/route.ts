@@ -9,8 +9,11 @@ export async function GET(request: NextRequest) {
     const category = searchParams.get('category')
     const serviceArea = searchParams.get('serviceArea')
     
-    // Buscar todos os providers primeiro
+    // Buscar apenas providers ativos
     const allProviders = await prisma.providerProfile.findMany({
+      where: {
+        active: true
+      },
       include: {
         user: {
           select: {

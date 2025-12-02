@@ -6,6 +6,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
   try {
     const provider = await prisma.providerProfile.findFirst({
       where: { 
+        active: true,
         OR: [
           { userId: params.id },
           { id: params.id }

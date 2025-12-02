@@ -7,7 +7,7 @@ function getUserFromToken(request: NextRequest) {
   if (!token) return null
   
   try {
-    return jwt.verify(token, 'fallback-secret-key') as { userId: string }
+    return jwt.verify(token, process.env.JWT_SECRET || 'fallback-secret-key') as { userId: string }
   } catch {
     return null
   }
@@ -41,7 +41,20 @@ export async function GET(request: NextRequest) {
     }
 
     const posts = await prisma.post.findMany({
-      where: whereClause,
+      where: {
+        ...whereClause,
+        author: {
+          OR: [
+            { userType: 'CLIENT' },
+            {
+              userType: 'PROVIDER',
+              providerProfile: {
+                active: true
+              }
+            }
+          ]
+        }
+      },
       include: {
         author: {
           include: {

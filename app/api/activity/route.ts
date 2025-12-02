@@ -5,7 +5,7 @@ import jwt from 'jsonwebtoken'
 function getUserFromToken(request: NextRequest) {
   const token = request.cookies.get('token')?.value
   if (!token) return null
-  return jwt.verify(token, "fallback-secret-key") as { userId: string }
+  return jwt.verify(token, process.env.JWT_SECRET || "fallback-secret-key") as { userId: string }
 }
 
 export async function POST(request: NextRequest) {

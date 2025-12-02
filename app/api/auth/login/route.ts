@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
 
     const token = jwt.sign(
       { userId: user.id, userType: user.userType },
-      'fallback-secret-key',
+      process.env.JWT_SECRET || 'fallback-secret-key',
       { expiresIn: '7d' }
     )
 

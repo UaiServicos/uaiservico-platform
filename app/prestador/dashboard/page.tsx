@@ -471,40 +471,43 @@ export default function PrestadorDashboard() {
                   </div>
                 )}
 
-                <Dialog open={isEditProfileOpen} onOpenChange={setIsEditProfileOpen}>
-                  <DialogTrigger asChild>
-                    <Button variant="outline" className="w-full"><Edit className="w-4 h-4 mr-2" />Editar Perfil</Button>
-                  </DialogTrigger>
-                  <DialogContent className="max-h-[90vh] overflow-y-auto">
-                    <DialogHeader>
-                      <DialogTitle>Editar Perfil</DialogTitle>
-                    </DialogHeader>
-                    <div className="space-y-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="profileName">Nome</Label>
-                        <Input
-                          id="profileName"
-                          value={profileData.name}
-                          onChange={(e) => setProfileData(prev => ({ ...prev, name: e.target.value }))}
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="profilePhone">Telefone</Label>
-                        <Input
-                          id="profilePhone"
-                          value={profileData.phone}
-                          onChange={(e) => setProfileData(prev => ({ ...prev, phone: e.target.value }))}
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="profileDescription">Descrição</Label>
-                        <Textarea
-                          id="profileDescription"
-                          value={profileData.description}
-                          onChange={(e) => setProfileData(prev => ({ ...prev, description: e.target.value }))}
-                          rows={3}
-                        />
-                      </div>
+                <div className="space-y-2">
+                  <Dialog open={isEditProfileOpen} onOpenChange={setIsEditProfileOpen}>
+                    <DialogTrigger asChild>
+                      <Button variant="outline" className="w-full"><Edit className="w-4 h-4 mr-2" />Editar Perfil</Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-h-[90vh] overflow-y-auto">
+                      <DialogHeader>
+                        <DialogTitle>Editar Perfil</DialogTitle>
+                      </DialogHeader>
+                      <div className="space-y-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="profileName">Nome</Label>
+                          <Input
+                            id="profileName"
+                            value={profileData.name}
+                            onChange={(e) => setProfileData(prev => ({ ...prev, name: e.target.value }))}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="profilePhone">Telefone</Label>
+                          <Input
+                            id="profilePhone"
+                            value={profileData.phone}
+                            onChange={(e) => setProfileData(prev => ({ ...prev, phone: e.target.value }))}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="profileDescription">Descrição</Label>
+                          <Textarea
+                            id="profileDescription"
+                            value={profileData.description}
+                            onChange={(e) => setProfileData(prev => ({ ...prev, description: e.target.value }))}
+                            rows={3}
+                          />
+                        </div>
+
+                        
 
                       {user.providerProfile && (
                         <>
@@ -704,13 +707,58 @@ export default function PrestadorDashboard() {
                         ))}
                       </div>
 
-                      <div className="flex justify-end space-x-2">
-                        <Button variant="outline" onClick={() => setIsEditProfileOpen(false)}>Cancelar</Button>
-                        <Button onClick={handleUpdateProfile}>Salvar</Button>
+                        <div className="flex justify-end space-x-2">
+                          <Button variant="outline" onClick={() => setIsEditProfileOpen(false)}>Cancelar</Button>
+                          <Button onClick={handleUpdateProfile}>Salvar</Button>
+                        </div>
                       </div>
-                    </div>
-                  </DialogContent>
-                </Dialog>
+                    </DialogContent>
+                  </Dialog>
+                  
+                  <Button 
+                    variant={user.providerProfile?.active ? "destructive" : "default"}
+                    className="w-full"
+                    onClick={async () => {
+                      try {
+                        const response = await fetch('/api/account/toggle-status', { method: 'PATCH' })
+                        if (response.ok) {
+                          const { active, message } = await response.json()
+                          toast.success(message)
+                          window.location.reload()
+                        } else {
+                          toast.error('Erro ao alterar status')
+                        }
+                      } catch (error) {
+                        toast.error('Erro ao alterar status')
+                      }
+                    }}
+                  >
+                    {user.providerProfile?.active ? 'Desativar Perfil' : 'Ativar Perfil'}
+                  </Button>
+                  
+                  <Button 
+                    variant="destructive" 
+                    className="w-full"
+                    onClick={async () => {
+                      if (confirm('Tem certeza que deseja deletar sua conta? Esta ação não pode ser desfeita.')) {
+                        try {
+                          const response = await fetch('/api/account/delete', { method: 'DELETE' })
+                          if (response.ok) {
+                            toast.success('Conta deletada com sucesso')
+                            router.push('/')
+                          } else {
+                            toast.error('Erro ao deletar conta')
+                          }
+                        } catch (error) {
+                          toast.error('Erro ao deletar conta')
+                        }
+                      }
+                    }}
+                  >
+                    Deletar Conta
+                  </Button>
+                </div>
+
               </CardContent>
             </Card>
           </div>

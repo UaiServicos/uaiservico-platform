@@ -7,7 +7,7 @@ async function getUserFromToken(request: NextRequest) {
   if (!token) return null
 
   try {
-    const decoded = jwt.verify(token, "fallback-secret-key") as { userId: string }
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || "fallback-secret-key") as { userId: string }
     return decoded
   } catch (error) {
     return null

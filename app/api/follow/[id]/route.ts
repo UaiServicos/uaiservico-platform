@@ -7,7 +7,7 @@ function getUserFromToken(request: NextRequest) {
   if (!token) return null
   
   try {
-    return jwt.verify(token, 'fallback-secret-key') as { userId: string }
+    return jwt.verify(token, process.env.JWT_SECRET || 'fallback-secret-key') as { userId: string }
   } catch {
     return null
   }

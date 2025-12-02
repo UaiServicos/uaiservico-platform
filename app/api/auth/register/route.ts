@@ -94,7 +94,7 @@ export async function POST(request: NextRequest) {
 
       const emailResult = await sendEmail({
         to: user.email,
-        subject: 'Bem-vindo ao UAIServiço!',
+        subject: 'Bem-vindo ao UAIServiços!',
         html: emailHtml
       })
 

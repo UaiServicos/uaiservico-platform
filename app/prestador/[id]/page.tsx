@@ -70,7 +70,7 @@ export default function ProviderProfilePage() {
       return
     }
     
-    const message = `Olá ${provider.user.name}! Vi seu perfil no UaiServiço e gostaria de conversar sobre seus serviços.`
+    const message = `Olá ${provider.user.name}! Vi seu perfil no UaiServiços e gostaria de conversar sobre seus serviços.`
     const whatsappUrl = `https://wa.me/55${provider.user.phone.replace(/\D/g, '')}?text=${encodeURIComponent(message)}`
     
     // Registrar contato
@@ -165,7 +165,7 @@ export default function ProviderProfilePage() {
                 <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
                   <span className="text-primary-foreground font-bold text-lg">U</span>
                 </div>
-                <span className="text-2xl font-bold text-primary">UaiServiço</span>
+                <span className="text-2xl font-bold text-primary">UaiServiços</span>
               </Link>
             </div>
           </div>

@@ -9,10 +9,10 @@ import { AuthProvider } from "@/components/auth-provider"
 import "./globals.css"
 
 export const metadata: Metadata = {
-  title: "UaiServiço - Conectando você aos melhores profissionais da sua região",
+  title: "UaiServiços - Conectando você aos melhores profissionais da sua região",
   description:
     "Encontre prestadores de serviços confiáveis perto de você. Pedreiros, encanadores, eletricistas, diaristas e muito mais.",
-  generator: "UaiServiço",
+  generator: "UaiServiços",
 }
 
 export default function RootLayout({

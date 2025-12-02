@@ -1,6 +1,6 @@
-# 🐘 Configuração PostgreSQL - UAIServiço Platform
+# 🐘 Configuração PostgreSQL - UAIServiços Platform
 
-Este documento explica como configurar o PostgreSQL para a plataforma UAIServiço.
+Este documento explica como configurar o PostgreSQL para a plataforma UAIServiços.
 
 ## 🚀 **Configuração Rápida**
 

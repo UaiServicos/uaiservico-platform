@@ -1,4 +1,4 @@
-# 🧪 Dados de Teste - UAIServiço Platform
+# 🧪 Dados de Teste - UAIServiços Platform
 
 Este documento lista todos os dados de exemplo criados no banco de dados para facilitar os testes.
 

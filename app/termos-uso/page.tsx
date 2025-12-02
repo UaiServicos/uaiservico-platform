@@ -14,7 +14,7 @@ export default function TermosUsoPage() {
               <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
                 <span className="text-primary-foreground font-bold text-lg">U</span>
               </div>
-              <span className="text-2xl font-bold text-primary">UaiServiço</span>
+              <span className="text-2xl font-bold text-primary">UaiServiços</span>
             </Link>
             <div className="flex items-center space-x-3">
               <Button variant="ghost" asChild>
@@ -60,12 +60,12 @@ export default function TermosUsoPage() {
               <CardContent className="p-8">
                 <h2 className="text-2xl font-bold mb-4">1. Introdução</h2>
                 <p className="text-muted-foreground mb-4">
-                  Bem-vindo à UaiServiço! Estes Termos de Uso ("Termos") regem o uso da nossa plataforma 
+                  Bem-vindo à UaiServiços! Estes Termos de Uso ("Termos") regem o uso da nossa plataforma 
                   de serviços online. Ao acessar ou usar nossa plataforma, você concorda em cumprir 
                   estes termos.
                 </p>
                 <p className="text-muted-foreground">
-                  A UaiServiço é uma plataforma que conecta clientes a prestadores de serviços locais, 
+                  A UaiServiços é uma plataforma que conecta clientes a prestadores de serviços locais, 
                   facilitando a contratação de serviços diversos em sua região.
                 </p>
               </CardContent>
@@ -78,7 +78,7 @@ export default function TermosUsoPage() {
                 <div className="space-y-4 text-muted-foreground">
                   <div>
                     <h3 className="font-semibold text-foreground mb-2">"Plataforma"</h3>
-                    <p>Refere-se ao site, aplicativo e todos os serviços oferecidos pela UaiServiço.</p>
+                    <p>Refere-se ao site, aplicativo e todos os serviços oferecidos pela UaiServiços.</p>
                   </div>
                   <div>
                     <h3 className="font-semibold text-foreground mb-2">"Cliente"</h3>
@@ -141,12 +141,12 @@ export default function TermosUsoPage() {
                 <h2 className="text-2xl font-bold mb-4">4. Termos dos Serviços</h2>
                 <div className="space-y-4 text-muted-foreground">
                   <p>
-                    A UaiServiço atua como intermediária entre clientes e prestadores. Não somos 
+                    A UaiServiços atua como intermediária entre clientes e prestadores. Não somos 
                     responsáveis pela qualidade, segurança ou legalidade dos serviços prestados.
                   </p>
                   <p>
                     O pagamento pelos serviços é feito diretamente entre cliente e prestador. 
-                    A UaiServiço não interfere na negociação de preços ou formas de pagamento.
+                    A UaiServiços não interfere na negociação de preços ou formas de pagamento.
                   </p>
                   <p>
                     Recomendamos que clientes e prestadores estabeleçam contratos claros antes 
@@ -202,7 +202,7 @@ export default function TermosUsoPage() {
                 <h2 className="text-2xl font-bold mb-4">7. Limitação de Responsabilidade</h2>
                 <div className="space-y-4 text-muted-foreground">
                   <p>
-                    A UaiServiço não se responsabiliza por danos diretos, indiretos, incidentais 
+                    A UaiServiços não se responsabiliza por danos diretos, indiretos, incidentais 
                     ou consequenciais resultantes do uso da plataforma.
                   </p>
                   <p>
@@ -326,7 +326,7 @@ export default function TermosUsoPage() {
                 <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
                   <span className="text-primary-foreground font-bold text-lg">U</span>
                 </div>
-                <span className="text-xl font-bold text-primary">UaiServiço</span>
+                <span className="text-xl font-bold text-primary">UaiServiços</span>
               </div>
               <p className="text-muted-foreground text-sm">Conectando você aos melhores profissionais da sua região.</p>
             </div>
@@ -356,7 +356,7 @@ export default function TermosUsoPage() {
             </div>
           </div>
           <div className="border-t mt-8 pt-8 text-center text-sm text-muted-foreground">
-            <p>&copy; 2024 UaiServiço. Todos os direitos reservados.</p>
+            <p>&copy; 2024 UaiServiços. Todos os direitos reservados.</p>
           </div>
         </div>
       </footer>

@@ -19,7 +19,7 @@ export default function BuscarServicosPage() {
               <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
                 <span className="text-primary-foreground font-bold text-lg">U</span>
               </div>
-              <span className="text-2xl font-bold text-primary">UaiServiço</span>
+              <span className="text-2xl font-bold text-primary">UaiServiços</span>
             </Link>
             <div className="flex items-center space-x-3">
               <Button variant="ghost" asChild>
@@ -331,7 +331,7 @@ export default function BuscarServicosPage() {
                 <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
                   <span className="text-primary-foreground font-bold text-lg">U</span>
                 </div>
-                <span className="text-xl font-bold text-primary">UaiServiço</span>
+                <span className="text-xl font-bold text-primary">UaiServiços</span>
               </div>
               <p className="text-muted-foreground text-sm">Conectando você aos melhores profissionais da sua região.</p>
             </div>
@@ -361,7 +361,7 @@ export default function BuscarServicosPage() {
             </div>
           </div>
           <div className="border-t mt-8 pt-8 text-center text-sm text-muted-foreground">
-            <p>&copy; 2024 UaiServiço. Todos os direitos reservados.</p>
+            <p>&copy; 2024 UaiServiços. Todos os direitos reservados.</p>
           </div>
         </div>
       </footer>

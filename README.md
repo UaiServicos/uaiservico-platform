@@ -1,4 +1,4 @@
-# 🛠️ UaiServiço - Plataforma de Prestadores de Serviços
+# 🛠️ UaiServiços - Plataforma de Prestadores de Serviços
 
 Uma plataforma completa para conectar clientes e prestadores de serviços, desenvolvida com Next.js 14, TypeScript, Prisma e SQLite.
 

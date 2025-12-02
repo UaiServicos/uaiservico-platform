@@ -15,7 +15,7 @@ export default function PlanosPage() {
               <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
                 <span className="text-primary-foreground font-bold text-lg">U</span>
               </div>
-              <span className="text-2xl font-bold text-primary">UaiServiço</span>
+              <span className="text-2xl font-bold text-primary">UaiServiços</span>
             </Link>
             <div className="flex items-center space-x-3">
               <Button variant="ghost" asChild>
@@ -271,7 +271,7 @@ export default function PlanosPage() {
       {/* Benefits Section */}
       <section className="py-16">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-12">Por que escolher a UaiServiço?</h2>
+          <h2 className="text-3xl font-bold text-center mb-12">Por que escolher a UaiServiços?</h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             <div className="text-center">
               <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -353,7 +353,7 @@ export default function PlanosPage() {
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl font-bold mb-6">Pronto para começar?</h2>
           <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
-            Junte-se a milhares de prestadores que já estão crescendo com a UaiServiço.
+            Junte-se a milhares de prestadores que já estão crescendo com a UaiServiços.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button
@@ -385,7 +385,7 @@ export default function PlanosPage() {
                 <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
                   <span className="text-primary-foreground font-bold text-lg">U</span>
                 </div>
-                <span className="text-xl font-bold text-primary">UaiServiço</span>
+                <span className="text-xl font-bold text-primary">UaiServiços</span>
               </div>
               <p className="text-muted-foreground text-sm">Conectando você aos melhores profissionais da sua região.</p>
             </div>
@@ -415,7 +415,7 @@ export default function PlanosPage() {
             </div>
           </div>
           <div className="border-t mt-8 pt-8 text-center text-sm text-muted-foreground">
-            <p>&copy; 2024 UaiServiço. Todos os direitos reservados.</p>
+            <p>&copy; 2024 UaiServiços. Todos os direitos reservados.</p>
           </div>
         </div>
       </footer>

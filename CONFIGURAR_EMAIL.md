@@ -27,7 +27,7 @@ JWT_SECRET="fallback-secret-key"
 SMTP_SERVICE="gmail"
 SMTP_USER="seu-email@gmail.com"
 SMTP_PASS="sua-senha-de-aplicativo"
-SMTP_FROM="UAIServiço <seu-email@gmail.com>"
+SMTP_FROM="UAIServiços <seu-email@gmail.com>"
 
 # Application URL
 NEXT_PUBLIC_BASE_URL="http://localhost:3000"
@@ -39,7 +39,7 @@ NEXT_PUBLIC_BASE_URL="http://localhost:3000"
 2. Ative a "Verificação em duas etapas" (se não estiver ativa)
 3. Vá em "Senhas de aplicativo"
 4. Selecione "Outro (nome personalizado)"
-5. Digite: "UAIServiço Platform"
+5. Digite: "UAIServiços Platform"
 6. Copie a senha gerada (ex: `abcd efgh ijkl mnop`)
 
 ### 3. **Configurar no `.env`**

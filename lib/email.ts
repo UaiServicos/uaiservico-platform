@@ -14,7 +14,7 @@ function validateEmailConfig(): EmailConfig {
     service: process.env.SMTP_SERVICE || 'gmail',
     user: process.env.SMTP_USER || '',
     pass: process.env.SMTP_PASS || '',
-    from: process.env.SMTP_FROM || 'UAIServiço <noreply@uaiservico.com>'
+    from: process.env.SMTP_FROM || 'UAIServiços <noreply@uaiservico.com>'
   }
 
   // Verificar se as variáveis estão definidas
@@ -140,7 +140,7 @@ export async function sendEmail(options: EmailOptions): Promise<{ success: boole
       text: options.text || options.html.replace(/<[^>]*>/g, ''), // Converter HTML para texto
       // Configurações adicionais para melhor entrega
       headers: {
-        'X-Mailer': 'UAIServiço Platform',
+        'X-Mailer': 'UaiServiços Platform',
         'X-Priority': '3'
       }
     }
@@ -238,7 +238,7 @@ export async function sendTestEmail(to: string): Promise<{ success: boolean; mes
       <html>
       <head>
         <meta charset="utf-8">
-        <title>Teste de Email - UAIServiço</title>
+        <title>Teste de Email - UaiServiços</title>
         <style>
           body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
           .container { max-width: 600px; margin: 0 auto; padding: 20px; }
@@ -252,7 +252,7 @@ export async function sendTestEmail(to: string): Promise<{ success: boolean; mes
             <h1>✅ Teste de Email</h1>
           </div>
           <div class="content">
-            <p>Este é um email de teste enviado pelo sistema UAIServiço.</p>
+            <p>Este é um email de teste enviado pelo sistema UaiServiços.</p>
             <p><strong>Data/Hora:</strong> ${new Date().toLocaleString('pt-BR')}</p>
             <p>Se você recebeu este email, a configuração está funcionando corretamente!</p>
           </div>
@@ -263,7 +263,7 @@ export async function sendTestEmail(to: string): Promise<{ success: boolean; mes
 
     const result = await sendEmail({
       to,
-      subject: 'Teste de Email - UAIServiço',
+      subject: 'Teste de Email - UaiServiços',
       html: testHtml
     })
 

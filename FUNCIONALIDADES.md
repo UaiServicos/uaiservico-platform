@@ -1,4 +1,4 @@
-# 🚀 Funcionalidades Implementadas - UaiServiço
+# 🚀 Funcionalidades Implementadas - UaiServiços
 
 ## 📋 Resumo das Implementações
 

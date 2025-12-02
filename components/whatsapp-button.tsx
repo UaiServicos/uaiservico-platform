@@ -17,7 +17,7 @@ interface WhatsAppButtonProps {
 
 export function WhatsAppButton({
   phone,
-  message = "Olá! Vi seu perfil no UaiServiço e gostaria de conversar sobre seus serviços.",
+  message = "Olá! Vi seu perfil no UaiServiços e gostaria de conversar sobre seus serviços.",
   children,
   variant = "default",
   size = "sm",

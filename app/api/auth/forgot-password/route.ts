@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
 
     const emailResult = await sendEmail({
       to: user.email,
-      subject: 'Redefinir Senha - UAIServiço',
+      subject: 'Redefinir Senha - UAIServiços',
       html: emailHtml
     })
 

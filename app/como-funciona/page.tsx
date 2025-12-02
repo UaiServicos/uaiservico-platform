@@ -14,7 +14,7 @@ export default function ComoFuncionaPage() {
               <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
                 <span className="text-primary-foreground font-bold text-lg">U</span>
               </div>
-              <span className="text-2xl font-bold text-primary">UaiServiço</span>
+              <span className="text-2xl font-bold text-primary">UaiServiços</span>
             </Link>
             <div className="flex items-center space-x-3">
               <Button variant="ghost" asChild>
@@ -32,7 +32,7 @@ export default function ComoFuncionaPage() {
       <section className="py-20 bg-gradient-to-br from-primary/5 via-secondary/5 to-accent/5">
         <div className="container mx-auto px-4 text-center">
           <h1 className="text-4xl md:text-6xl font-bold text-balance mb-6">
-            Como Funciona a <span className="text-primary">UaiServiço</span>
+            Como Funciona a <span className="text-primary">UaiServiços</span>
           </h1>
           <p className="text-xl text-muted-foreground text-balance mb-8 max-w-2xl mx-auto">
             Conectamos você aos melhores profissionais da sua região de forma simples, rápida e segura.
@@ -96,7 +96,7 @@ export default function ComoFuncionaPage() {
       {/* Benefits Section */}
       <section className="py-16 bg-card/30">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-12">Por que escolher a UaiServiço?</h2>
+          <h2 className="text-3xl font-bold text-center mb-12">Por que escolher a UaiServiços?</h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             <div className="text-center">
               <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -149,7 +149,7 @@ export default function ComoFuncionaPage() {
               <CardContent className="p-6">
                 <h3 className="font-semibold mb-2">Como funciona o pagamento?</h3>
                 <p className="text-muted-foreground">
-                  O pagamento é feito diretamente entre você e o prestador. A UaiServiço facilita 
+                  O pagamento é feito diretamente entre você e o prestador. A UaiServiços facilita 
                   o contato, mas não interfere na negociação de preços ou formas de pagamento.
                 </p>
               </CardContent>
@@ -216,7 +216,7 @@ export default function ComoFuncionaPage() {
                 <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
                   <span className="text-primary-foreground font-bold text-lg">U</span>
                 </div>
-                <span className="text-xl font-bold text-primary">UaiServiço</span>
+                <span className="text-xl font-bold text-primary">UaiServiços</span>
               </div>
               <p className="text-muted-foreground text-sm">Conectando você aos melhores profissionais da sua região.</p>
             </div>
@@ -246,7 +246,7 @@ export default function ComoFuncionaPage() {
             </div>
           </div>
           <div className="border-t mt-8 pt-8 text-center text-sm text-muted-foreground">
-            <p>&copy; 2024 UaiServiço. Todos os direitos reservados.</p>
+            <p>&copy; 2024 UaiServiços. Todos os direitos reservados.</p>
           </div>
         </div>
       </footer>

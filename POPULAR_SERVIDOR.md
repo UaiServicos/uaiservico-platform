@@ -70,7 +70,7 @@ DATABASE_URL = sua-connection-string-postgresql
 SMTP_USER = seu-email@gmail.com
 SMTP_PASS = sua-senha-de-aplicativo
 SMTP_SERVICE = gmail
-SMTP_FROM = UAIServiço <seu-email@gmail.com>
+SMTP_FROM = UAIServiços <seu-email@gmail.com>
 JWT_SECRET = sua-chave-secreta
 NEXT_PUBLIC_BASE_URL = https://sua-url.vercel.app
 ```

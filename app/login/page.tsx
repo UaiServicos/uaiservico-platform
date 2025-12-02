@@ -89,7 +89,7 @@ export default function LoginPage() {
               <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
                 <span className="text-primary-foreground font-bold text-lg">U</span>
               </div>
-              <span className="text-2xl font-bold text-primary">UaiServiço</span>
+              <span className="text-2xl font-bold text-primary">UaiServiços</span>
             </div>
           </Link>
         </div>

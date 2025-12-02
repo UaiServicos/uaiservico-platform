@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 :root {
-  /* Updated color tokens to match UaiServiço design brief with vibrant orange/blue theme */
+  /* Updated color tokens to match UaiServiços design brief with vibrant orange/blue theme */
   --background: 0 0% 100%; /* #ffffff */
   --foreground: 0 0% 10%; /* #1a1a1a */
   --card: 45 100% 98%; /* #fefbf3 */

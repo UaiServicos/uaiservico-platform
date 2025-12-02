@@ -221,7 +221,7 @@ export default function DashboardPage() {
     
     const providerName = provider.user?.name || 'Prestador'
     const providerPhone = provider.user?.phone || ''
-    const message = `Olá ${providerName}! Vi seu perfil no UaiServiço e gostaria de conversar sobre seus serviços.`
+    const message = `Olá ${providerName}! Vi seu perfil no UaiServiços e gostaria de conversar sobre seus serviços.`
     const whatsappUrl = `https://wa.me/55${providerPhone.replace(/\D/g, '')}?text=${encodeURIComponent(message)}`
     
     // Registrar contato

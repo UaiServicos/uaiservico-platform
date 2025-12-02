@@ -100,7 +100,7 @@ export default function HomePage() {
               <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
                 <span className="text-primary-foreground font-bold text-lg">U</span>
               </div>
-              <span className="text-2xl font-bold text-primary">UaiServiço</span>
+              <span className="text-2xl font-bold text-primary">UaiServiços</span>
             </div>
             <nav className="hidden md:flex items-center space-x-6">
               <Link href="#servicos" className="text-muted-foreground hover:text-foreground transition-colors">
@@ -471,7 +471,7 @@ export default function HomePage() {
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl font-bold mb-6">Você é um Prestador de Serviços?</h2>
           <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
-            Cadastre-se na UaiServiço e receba novos clientes todos os dias. Planos a partir de R$ 29,90/mês.
+            Cadastre-se na UaiServiços e receba novos clientes todos os dias. Planos a partir de R$ 29,90/mês.
           </p>
           <div className="grid md:grid-cols-3 gap-6 mb-8">
             <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
@@ -510,7 +510,7 @@ export default function HomePage() {
                 <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
                   <span className="text-primary-foreground font-bold text-lg">U</span>
                 </div>
-                <span className="text-xl font-bold text-primary">UaiServiço</span>
+                <span className="text-xl font-bold text-primary">UaiServiços</span>
               </div>
               <p className="text-muted-foreground text-sm">Conectando você aos melhores profissionais da sua região.</p>
             </div>
@@ -576,7 +576,7 @@ export default function HomePage() {
             </div>
           </div>
           <div className="border-t mt-8 pt-8 text-center text-sm text-muted-foreground">
-            <p>&copy; 2024 UaiServiço. Todos os direitos reservados.</p>
+            <p>&copy; 2024 UaiServiços. Todos os direitos reservados.</p>
           </div>
         </div>
       </footer>

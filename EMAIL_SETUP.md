@@ -1,6 +1,6 @@
-# 📧 Configuração de Email - UAIServiço Platform
+# 📧 Configuração de Email - UAIServiços Platform
 
-Este documento explica como configurar e testar a funcionalidade de envio de emails na plataforma UAIServiço.
+Este documento explica como configurar e testar a funcionalidade de envio de emails na plataforma UAIServiços.
 
 ## 🚀 Funcionalidades Implementadas
 
@@ -37,7 +37,7 @@ Crie um arquivo `.env` na raiz do projeto com as seguintes variáveis:
 SMTP_SERVICE="gmail"
 SMTP_USER="seu-email@gmail.com"
 SMTP_PASS="sua-senha-de-aplicativo"
-SMTP_FROM="UAIServiço <seu-email@gmail.com>"
+SMTP_FROM="UAIServiços <seu-email@gmail.com>"
 
 # Application URL
 NEXT_PUBLIC_BASE_URL="http://localhost:3000"
@@ -51,7 +51,7 @@ Para usar o Gmail, você precisa criar uma **Senha de Aplicativo**:
 2. Ative a "Verificação em duas etapas" se não estiver ativa
 3. Vá em "Senhas de aplicativo"
 4. Selecione "Outro (nome personalizado)"
-5. Digite "UAIServiço Platform"
+5. Digite "UAIServiços Platform"
 6. Copie a senha gerada e use em `SMTP_PASS`
 
 ### 3. Outros Provedores
@@ -76,7 +76,7 @@ GET /api/test-email?action=test-config
 ```json
 {
   "success": true,
-  "message": "✅ Configuração de email verificada com sucesso!\nServiço: gmail\nUsuário: seu-email@gmail.com\nFrom: UAIServiço <seu-email@gmail.com>"
+  "message": "✅ Configuração de email verificada com sucesso!\nServiço: gmail\nUsuário: seu-email@gmail.com\nFrom: UAIServiços <seu-email@gmail.com>"
 }
 ```
 

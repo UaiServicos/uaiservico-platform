@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Mail, Phone, MapPin, Clock, MessageCircle, Send } from "lucide-react"
 import Link from "next/link"
 
+
 export default function ContatoPage() {
   return (
     <div className="min-h-screen bg-background">

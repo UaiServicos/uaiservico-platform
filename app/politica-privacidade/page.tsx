@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ArrowLeft, Shield, Eye, Lock, Database, Mail, Users } from "lucide-react"
 import Link from "next/link"
 
+
 export default function PoliticaPrivacidadePage() {
   return (
     <div className="min-h-screen bg-background">

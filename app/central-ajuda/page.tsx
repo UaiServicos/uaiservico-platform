@@ -237,23 +237,8 @@ export default function CentralAjudaPage() {
       <section className="py-16">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center mb-12">Ainda precisa de ajuda?</h2>
-          <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-            <Card className="text-center">
-              <CardContent className="p-6">
-                <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <MessageCircle className="w-8 h-8 text-primary" />
-                </div>
-                <h3 className="font-semibold mb-2">Chat Online</h3>
-                <p className="text-sm text-muted-foreground mb-4">
-                  Converse com nossa equipe de suporte em tempo real
-                </p>
-                <Button variant="outline" className="w-full">
-                  Iniciar Chat
-                </Button>
-              </CardContent>
-            </Card>
-
-            <Card className="text-center">
+          <div className="flex justify-center">
+            <Card className="text-center max-w-sm">
               <CardContent className="p-6">
                 <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Mail className="w-8 h-8 text-primary" />
@@ -264,21 +249,6 @@ export default function CentralAjudaPage() {
                 </p>
                 <Button variant="outline" className="w-full" asChild>
                   <Link href="/contato">Enviar Email</Link>
-                </Button>
-              </CardContent>
-            </Card>
-
-            <Card className="text-center">
-              <CardContent className="p-6">
-                <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Phone className="w-8 h-8 text-primary" />
-                </div>
-                <h3 className="font-semibold mb-2">Telefone</h3>
-                <p className="text-sm text-muted-foreground mb-4">
-                  Fale diretamente com nossa equipe de suporte
-                </p>
-                <Button variant="outline" className="w-full">
-                  (31) 99999-9999
                 </Button>
               </CardContent>
             </Card>

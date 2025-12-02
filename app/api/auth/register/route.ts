@@ -88,13 +88,17 @@ export async function POST(request: NextRequest) {
 
     // Enviar email de boas-vindas
     try {
-      const emailHtml = generateEmailTemplate('welcome', {
-        name: user.name
-      })
+      const emailHtml = userType === 'PROVIDER' 
+        ? generateEmailTemplate('welcome-provider', { name: user.name })
+        : generateEmailTemplate('welcome-client', { name: user.name })
+
+      const subject = userType === 'PROVIDER' 
+        ? 'Bem-vindo ao UAIServiços - Complete seu perfil e conecte-se a clientes!'
+        : 'Bem-vindo ao UAIServiços!'
 
       const emailResult = await sendEmail({
         to: user.email,
-        subject: 'Bem-vindo ao UAIServiços!',
+        subject,
         html: emailHtml
       })
 

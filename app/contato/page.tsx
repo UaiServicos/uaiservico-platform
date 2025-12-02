@@ -1,3 +1,6 @@
+"use client"
+
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -5,9 +8,45 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Mail, Phone, MapPin, Clock, MessageCircle, Send } from "lucide-react"
 import Link from "next/link"
-
+import { toast } from "sonner"
 
 export default function ContatoPage() {
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    subject: '',
+    message: ''
+  })
+  const [loading, setLoading] = useState(false)
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    
+    if (!formData.name || !formData.email || !formData.subject || !formData.message) {
+      toast.error('Todos os campos são obrigatórios')
+      return
+    }
+
+    setLoading(true)
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      })
+
+      if (response.ok) {
+        toast.success('Mensagem enviada com sucesso!')
+        setFormData({ name: '', email: '', subject: '', message: '' })
+      } else {
+        toast.error('Erro ao enviar mensagem')
+      }
+    } catch (error) {
+      toast.error('Erro ao enviar mensagem')
+    } finally {
+      setLoading(false)
+    }
+  }
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -54,46 +93,59 @@ export default function ContatoPage() {
                 <CardTitle>Envie sua Mensagem</CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="text-sm font-medium mb-2 block">Nome</label>
-                    <Input placeholder="Seu nome completo" />
+                <form onSubmit={handleSubmit}>
+                  <div className="grid md:grid-cols-2 gap-4 mb-6">
+                    <div>
+                      <label className="text-sm font-medium mb-2 block">Nome</label>
+                      <Input 
+                        placeholder="Seu nome completo" 
+                        value={formData.name}
+                        onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                      />
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium mb-2 block">Email</label>
+                      <Input 
+                        type="email" 
+                        placeholder="seu@email.com" 
+                        value={formData.email}
+                        onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+                      />
+                    </div>
                   </div>
-                  <div>
-                    <label className="text-sm font-medium mb-2 block">Email</label>
-                    <Input type="email" placeholder="seu@email.com" />
+                  
+                  <div className="mb-6">
+                    <label className="text-sm font-medium mb-2 block">Assunto</label>
+                    <Select value={formData.subject} onValueChange={(value) => setFormData(prev => ({ ...prev, subject: value }))}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecione o assunto" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Suporte Técnico">Suporte Técnico</SelectItem>
+                        <SelectItem value="Dúvidas sobre Prestadores">Dúvidas sobre Prestadores</SelectItem>
+                        <SelectItem value="Dúvidas sobre Clientes">Dúvidas sobre Clientes</SelectItem>
+                        <SelectItem value="Planos e Pagamentos">Planos e Pagamentos</SelectItem>
+                        <SelectItem value="Parcerias">Parcerias</SelectItem>
+                        <SelectItem value="Outros">Outros</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
-                </div>
-                
-                <div>
-                  <label className="text-sm font-medium mb-2 block">Assunto</label>
-                  <Select>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecione o assunto" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="suporte">Suporte Técnico</SelectItem>
-                      <SelectItem value="prestador">Dúvidas sobre Prestadores</SelectItem>
-                      <SelectItem value="cliente">Dúvidas sobre Clientes</SelectItem>
-                      <SelectItem value="planos">Planos e Pagamentos</SelectItem>
-                      <SelectItem value="parceria">Parcerias</SelectItem>
-                      <SelectItem value="outros">Outros</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
 
-                <div>
-                  <label className="text-sm font-medium mb-2 block">Mensagem</label>
-                  <Textarea 
-                    placeholder="Descreva sua dúvida ou solicitação..."
-                    className="min-h-[120px]"
-                  />
-                </div>
+                  <div className="mb-6">
+                    <label className="text-sm font-medium mb-2 block">Mensagem</label>
+                    <Textarea 
+                      placeholder="Descreva sua dúvida ou solicitação..."
+                      className="min-h-[120px]"
+                      value={formData.message}
+                      onChange={(e) => setFormData(prev => ({ ...prev, message: e.target.value }))}
+                    />
+                  </div>
 
-                <Button className="w-full" size="lg">
-                  <Send className="w-4 h-4 mr-2" />
-                  Enviar Mensagem
-                </Button>
+                  <Button className="w-full" size="lg" type="submit" disabled={loading}>
+                    <Send className="w-4 h-4 mr-2" />
+                    {loading ? 'Enviando...' : 'Enviar Mensagem'}
+                  </Button>
+                </form>
               </CardContent>
             </Card>
 
@@ -108,32 +160,11 @@ export default function ContatoPage() {
                     <Mail className="w-5 h-5 text-primary mt-1" />
                     <div>
                       <h4 className="font-semibold">Email</h4>
-                      <p className="text-muted-foreground">contato@uaiservico.com.br</p>
+                      <p className="text-muted-foreground">contato.uaiservicos@gmail.com</p>
                       <p className="text-sm text-muted-foreground">Resposta em até 24 horas</p>
                     </div>
                   </div>
-
-                  <div className="flex items-start gap-3">
-                    <Phone className="w-5 h-5 text-primary mt-1" />
-                    <div>
-                      <h4 className="font-semibold">Telefone</h4>
-                      <p className="text-muted-foreground">(31) 99999-9999</p>
-                      <p className="text-sm text-muted-foreground">Segunda a Sexta, 8h às 18h</p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start gap-3">
-                    <MapPin className="w-5 h-5 text-primary mt-1" />
-                    <div>
-                      <h4 className="font-semibold">Endereço</h4>
-                      <p className="text-muted-foreground">
-                        Rua das Flores, 123<br />
-                        Savassi, Belo Horizonte - MG<br />
-                        CEP: 30112-000
-                      </p>
-                    </div>
-                  </div>
-
+                  
                   <div className="flex items-start gap-3">
                     <Clock className="w-5 h-5 text-primary mt-1" />
                     <div>
@@ -144,34 +175,6 @@ export default function ContatoPage() {
                         Domingo: Fechado
                       </p>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle>Suporte Rápido</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex items-center gap-3">
-                    <MessageCircle className="w-5 h-5 text-primary" />
-                    <div>
-                      <h4 className="font-semibold">Chat Online</h4>
-                      <p className="text-sm text-muted-foreground">Disponível 24/7</p>
-                    </div>
-                    <Button variant="outline" size="sm" className="ml-auto">
-                      Iniciar Chat
-                    </Button>
-                  </div>
-                  
-                  <div className="pt-4 border-t">
-                    <h4 className="font-semibold mb-2">Assuntos Mais Comuns</h4>
-                    <ul className="space-y-2 text-sm text-muted-foreground">
-                      <li>• Como encontrar um prestador</li>
-                      <li>• Problemas com pagamento</li>
-                      <li>• Como se tornar prestador</li>
-                      <li>• Cancelamento de serviços</li>
-                    </ul>
                   </div>
                 </CardContent>
               </Card>

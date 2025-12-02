@@ -527,23 +527,6 @@ export default function PrestadorDashboard() {
                           </div>
                         </>
                       )}
-                      <div className="space-y-2">
-                        <Label htmlFor="profilePhone">Telefone</Label>
-                        <Input
-                          id="profilePhone"
-                          value={profileData.phone}
-                          onChange={(e) => setProfileData(prev => ({ ...prev, phone: e.target.value }))}
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="profileDescription">Descrição</Label>
-                        <Textarea
-                          id="profileDescription"
-                          value={profileData.description}
-                          onChange={(e) => setProfileData(prev => ({ ...prev, description: e.target.value }))}
-                          rows={3}
-                        />
-                      </div>
 
                       {/* Experiência */}
                       <div className="grid grid-cols-2 gap-4">

@@ -26,16 +26,32 @@ export default function CadastroClientePage() {
     acceptTerms: false,
     acceptNewsletter: false
   })
+  const [emailSuggestions, setEmailSuggestions] = useState<string[]>([])
   const [loading, setLoading] = useState(false)
 
   const handleInputChange = (field: string, value: string | boolean) => {
     setFormData(prev => ({ ...prev, [field]: value }))
+    
+    if (field === 'email' && typeof value === 'string') {
+      const emailValue = value as string
+      if (emailValue && !emailValue.includes('@')) {
+        const domains = ['@gmail.com', '@hotmail.com', '@yahoo.com.br', '@outlook.com', '@uol.com.br', '@bol.com.br', '@terra.com.br', '@ig.com.br']
+        setEmailSuggestions(domains.map(domain => emailValue + domain))
+      } else {
+        setEmailSuggestions([])
+      }
+    }
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     
     // Validações
+    if (!formData.acceptTerms) {
+      toast.error("Você deve aceitar os termos de uso")
+      return
+    }
+
     if (!formData.name || !formData.email || !formData.phone || !formData.password || !formData.city || !formData.state) {
       toast.error("Por favor, preencha todos os campos obrigatórios")
       return
@@ -48,11 +64,6 @@ export default function CadastroClientePage() {
 
     if (formData.password.length < 6) {
       toast.error("A senha deve ter pelo menos 6 caracteres")
-      return
-    }
-
-    if (!formData.acceptTerms) {
-      toast.error("Você deve aceitar os termos de uso")
       return
     }
 
@@ -182,8 +193,14 @@ export default function CadastroClientePage() {
                     placeholder="seu@email.com" 
                     value={formData.email}
                     onChange={(e) => handleInputChange('email', e.target.value)}
+                    list="email-suggestions"
                     required
                   />
+                  <datalist id="email-suggestions">
+                    {emailSuggestions.map((suggestion, index) => (
+                      <option key={index} value={suggestion} />
+                    ))}
+                  </datalist>
                 </div>
 
                 <div className="grid md:grid-cols-2 gap-4">
@@ -219,37 +236,76 @@ export default function CadastroClientePage() {
                         <SelectValue placeholder="Selecione o estado" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="MG">Minas Gerais</SelectItem>
-                        <SelectItem value="SP">São Paulo</SelectItem>
-                        <SelectItem value="RJ">Rio de Janeiro</SelectItem>
-                        <SelectItem value="ES">Espírito Santo</SelectItem>
+                        <SelectItem value="AC">Acre</SelectItem>
+                        <SelectItem value="AL">Alagoas</SelectItem>
+                        <SelectItem value="AP">Amapá</SelectItem>
+                        <SelectItem value="AM">Amazonas</SelectItem>
                         <SelectItem value="BA">Bahia</SelectItem>
-                        <SelectItem value="GO">Goiás</SelectItem>
+                        <SelectItem value="CE">Ceará</SelectItem>
                         <SelectItem value="DF">Distrito Federal</SelectItem>
-                        <SelectItem value="RS">Rio Grande do Sul</SelectItem>
+                        <SelectItem value="ES">Espírito Santo</SelectItem>
+                        <SelectItem value="GO">Goiás</SelectItem>
+                        <SelectItem value="MA">Maranhão</SelectItem>
+                        <SelectItem value="MT">Mato Grosso</SelectItem>
+                        <SelectItem value="MS">Mato Grosso do Sul</SelectItem>
+                        <SelectItem value="MG">Minas Gerais</SelectItem>
+                        <SelectItem value="PA">Pará</SelectItem>
+                        <SelectItem value="PB">Paraíba</SelectItem>
                         <SelectItem value="PR">Paraná</SelectItem>
+                        <SelectItem value="PE">Pernambuco</SelectItem>
+                        <SelectItem value="PI">Piauí</SelectItem>
+                        <SelectItem value="RJ">Rio de Janeiro</SelectItem>
+                        <SelectItem value="RN">Rio Grande do Norte</SelectItem>
+                        <SelectItem value="RS">Rio Grande do Sul</SelectItem>
+                        <SelectItem value="RO">Rondônia</SelectItem>
+                        <SelectItem value="RR">Roraima</SelectItem>
                         <SelectItem value="SC">Santa Catarina</SelectItem>
+                        <SelectItem value="SP">São Paulo</SelectItem>
+                        <SelectItem value="SE">Sergipe</SelectItem>
+                        <SelectItem value="TO">Tocantins</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="cidade">Cidade *</Label>
-                    <Input 
-                      id="cidade" 
-                      placeholder="Sua cidade" 
-                      value={formData.city}
-                      onChange={(e) => handleInputChange('city', e.target.value)}
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="bairro">Bairro</Label>
-                    <Input 
-                      id="bairro" 
-                      placeholder="Seu bairro" 
-                      value={formData.neighborhood}
-                      onChange={(e) => handleInputChange('neighborhood', e.target.value)}
-                    />
+                    <Select value={formData.city} onValueChange={(value) => handleInputChange('city', value)}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecione sua cidade" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="sao-joao-del-rei">São João del Rei</SelectItem>
+                        <SelectItem value="tiradentes">Tiradentes</SelectItem>
+                        <SelectItem value="resende-costa">Resende Costa</SelectItem>
+                        <SelectItem value="coronel-xavier-chaves">Coronel Xavier Chaves</SelectItem>
+                        <SelectItem value="ritapolis">Ritápolis</SelectItem>
+                        <SelectItem value="santa-cruz-de-minas">Santa Cruz de Minas</SelectItem>
+                        <SelectItem value="sao-tiago">São Tiago</SelectItem>
+                        <SelectItem value="lagoa-dourada">Lagoa Dourada</SelectItem>
+                        <SelectItem value="bom-sucesso">Bom Sucesso</SelectItem>
+                        <SelectItem value="nazareno">Nazareno</SelectItem>
+                        <SelectItem value="prados">Prados</SelectItem>
+                        <SelectItem value="conceicao-da-barra-de-minas">Conceição da Barra de Minas</SelectItem>
+                        <SelectItem value="barbacena">Barbacena</SelectItem>
+                        <SelectItem value="lavras">Lavras</SelectItem>
+                        <SelectItem value="sao-lourenco">São Lourenço</SelectItem>
+                        <SelectItem value="caxambu">Caxambu</SelectItem>
+                        <SelectItem value="tres-coracoes">Três Corações</SelectItem>
+                        <SelectItem value="varginha">Varginha</SelectItem>
+                        <SelectItem value="pouso-alegre">Pouso Alegre</SelectItem>
+                        <SelectItem value="pocos-de-caldas">Poços de Caldas</SelectItem>
+                        <SelectItem value="passos">Passos</SelectItem>
+                        <SelectItem value="formiga">Formiga</SelectItem>
+                        <SelectItem value="divinopolis">Divinópolis</SelectItem>
+                        <SelectItem value="oliveira">Oliveira</SelectItem>
+                        <SelectItem value="campo-belo">Campo Belo</SelectItem>
+                        <SelectItem value="conselheiro-lafaiete">Conselheiro Lafaiete</SelectItem>
+                        <SelectItem value="congonhas">Congonhas</SelectItem>
+                        <SelectItem value="ouro-preto">Ouro Preto</SelectItem>
+                        <SelectItem value="mariana">Mariana</SelectItem>
+                        <SelectItem value="itabirito">Itabirito</SelectItem>
+                        <SelectItem value="ouro-branco">Ouro Branco</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
                 </div>
 
@@ -261,11 +317,11 @@ export default function CadastroClientePage() {
                   />
                   <Label htmlFor="termos" className="text-sm">
                     Aceito os{" "}
-                    <Link href="#" className="text-primary hover:underline">
+                    <Link href="/termos-uso" className="text-primary hover:underline">
                       termos de uso
                     </Link>{" "}
                     e
-                    <Link href="#" className="text-primary hover:underline">
+                    <Link href="/politica-privacidade" className="text-primary hover:underline">
                       {" "}
                       política de privacidade
                     </Link>

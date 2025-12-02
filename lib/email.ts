@@ -297,11 +297,12 @@ export async function sendTestEmail(to: string): Promise<{ success: boolean; mes
   }
 }
 
-export function generateEmailTemplate(type: 'welcome' | 'password-reset', data: any): string {
+export function generateEmailTemplate(type: 'welcome' | 'welcome-provider' | 'welcome-client' | 'password-reset', data: any): string {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
   
   switch (type) {
     case 'welcome':
+    case 'welcome-client':
       return `
         <!DOCTYPE html>
         <html lang="pt-BR">
@@ -423,9 +424,9 @@ export function generateEmailTemplate(type: 'welcome' | 'password-reset', data: 
                 <ul>
                   <li>Buscar profissionais qualificados na sua região</li>
                   <li>Contratar serviços com total segurança</li>
-                  <li>Avaliar e ser avaliado por outros usuários</li>
-                  <li>Gerenciar todos os seus serviços em um só lugar</li>
-                  <li>Acompanhar o status dos seus pedidos em tempo real</li>
+                  <li>Avaliar prestadores de serviço</li>
+                  <li>Gerenciar todos os seus pedidos em um só lugar</li>
+                  <li>Acompanhar o status dos seus serviços em tempo real</li>
               </ul>
               </div>
               
@@ -441,6 +442,203 @@ export function generateEmailTemplate(type: 'welcome' | 'password-reset', data: 
             <div class="footer">
               <p><strong>UAI Serviços</strong></p>
               <p>Conectando você aos melhores profissionais</p>
+              <p style="margin-top: 15px; font-size: 12px;">
+                Este é um email automático, não responda.
+              </p>
+            </div>
+          </div>
+        </body>
+        </html>
+      `
+    
+    case 'welcome-provider':
+      return `
+        <!DOCTYPE html>
+        <html lang="pt-BR">
+        <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Bem-vindo ao UAI Serviços - Prestador</title>
+          <style>
+            * { margin: 0; padding: 0; box-sizing: border-box; }
+            body { 
+              font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif; 
+              line-height: 1.6; 
+              color: #333; 
+              background-color: #f8f9fa;
+            }
+            .email-container { 
+              max-width: 600px; 
+              margin: 0 auto; 
+              background: white;
+              box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            }
+            .header { 
+              background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+              color: white; 
+              padding: 40px 20px; 
+              text-align: center; 
+            }
+            .header h1 { 
+              font-size: 28px; 
+              margin-bottom: 10px;
+              font-weight: 600;
+            }
+            .content { 
+              padding: 40px 30px; 
+            }
+            .welcome-text {
+              font-size: 18px;
+              margin-bottom: 20px;
+              color: #2c3e50;
+            }
+            .features {
+              background: #fff3e0;
+              padding: 25px;
+              border-radius: 10px;
+              margin: 25px 0;
+              border-left: 4px solid #ff6b35;
+            }
+            .features h3 {
+              color: #e65100;
+              margin-bottom: 15px;
+              font-size: 16px;
+            }
+            .features ul {
+              list-style: none;
+              padding: 0;
+            }
+            .features li {
+              padding: 8px 0;
+              position: relative;
+              padding-left: 25px;
+            }
+            .features li:before {
+              content: "✓";
+              position: absolute;
+              left: 0;
+              color: #ff6b35;
+              font-weight: bold;
+            }
+            .cta-section {
+              background: #e8f5e8;
+              padding: 25px;
+              border-radius: 10px;
+              margin: 25px 0;
+              border-left: 4px solid #28a745;
+            }
+            .cta-section h3 {
+              color: #155724;
+              margin-bottom: 15px;
+              font-size: 18px;
+            }
+            .button { 
+              display: inline-block; 
+              background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+              color: white; 
+              padding: 15px 30px; 
+              text-decoration: none; 
+              border-radius: 8px; 
+              margin: 15px 10px 15px 0;
+              font-weight: 600;
+              text-align: center;
+              transition: transform 0.2s ease;
+            }
+            .button:hover {
+              transform: translateY(-2px);
+            }
+            .footer { 
+              background: #f8f9fa;
+              text-align: center; 
+              color: #6c757d; 
+              font-size: 14px; 
+              padding: 30px 20px;
+              border-top: 1px solid #e9ecef;
+            }
+            .footer p {
+              margin: 5px 0;
+            }
+            .logo {
+              font-size: 24px;
+              font-weight: bold;
+              margin-bottom: 10px;
+            }
+            .highlight {
+              background: #fff3e0;
+              padding: 20px;
+              border-radius: 8px;
+              margin: 20px 0;
+              border: 1px solid #ffcc80;
+            }
+            @media (max-width: 600px) {
+              .email-container { margin: 0; }
+              .content { padding: 30px 20px; }
+              .header { padding: 30px 20px; }
+              .header h1 { font-size: 24px; }
+              .button { display: block; margin: 10px 0; }
+            }
+          </style>
+        </head>
+        <body>
+          <div class="email-container">
+            <div class="header">
+              <div class="logo">🚀 UAI Serviços</div>
+              <h1>Bem-vindo, Prestador!</h1>
+              <p>Vamos conectar você a novos clientes</p>
+            </div>
+            <div class="content">
+              <p class="welcome-text">Olá <strong>${data.name}</strong>,</p>
+              <p>Parabéns! Sua conta de prestador foi criada com sucesso. Agora você faz parte da maior plataforma de serviços da região!</p>
+              
+              <div class="cta-section">
+                <h3>🎨 Próximos Passos Importantes:</h3>
+                <p><strong>Complete seu perfil agora</strong> para começar a receber clientes:</p>
+                <ul style="list-style: none; padding: 0; margin: 15px 0;">
+                  <li style="padding: 5px 0; padding-left: 25px; position: relative;">
+                    <span style="position: absolute; left: 0; color: #28a745; font-weight: bold;">✓</span>
+                    Adicione fotos dos seus trabalhos
+                  </li>
+                  <li style="padding: 5px 0; padding-left: 25px; position: relative;">
+                    <span style="position: absolute; left: 0; color: #28a745; font-weight: bold;">✓</span>
+                    Descreva melhor seus serviços e especialidades
+                  </li>
+                  <li style="padding: 5px 0; padding-left: 25px; position: relative;">
+                    <span style="position: absolute; left: 0; color: #28a745; font-weight: bold;">✓</span>
+                    Defina seus preços e disponibilidade
+                  </li>
+                  <li style="padding: 5px 0; padding-left: 25px; position: relative;">
+                    <span style="position: absolute; left: 0; color: #28a745; font-weight: bold;">✓</span>
+                    Adicione uma foto de perfil profissional
+                  </li>
+                </ul>
+              </div>
+              
+              <div class="features">
+                <h3>💼 Como vamos te conectar a clientes:</h3>
+                <ul>
+                  <li>Seu perfil aparecerá nas buscas dos clientes da sua região</li>
+                  <li>Receba notificações de novos pedidos de orçamento</li>
+                  <li>Construa sua reputação com avaliações reais</li>
+                  <li>Gerencie todos os seus trabalhos em um só lugar</li>
+                  <li>Aumente sua visibilidade com nosso sistema de destaque</li>
+                </ul>
+              </div>
+              
+              <div class="highlight">
+                <p><strong>💡 Dica Importante:</strong> Prestadores com perfis completos recebem <strong>3x mais contatos</strong> de clientes. Não perca tempo!</p>
+              </div>
+              
+              <div style="text-align: center; margin: 30px 0;">
+                <a href="${baseUrl}/login" class="button">Completar Meu Perfil</a>
+              </div>
+              
+              <p style="margin-top: 30px; font-size: 14px; color: #6c757d;">
+                Tem dúvidas? Nossa equipe está pronta para te ajudar a começar!
+              </p>
+            </div>
+            <div class="footer">
+              <p><strong>UAI Serviços</strong></p>
+              <p>Conectando prestadores a clientes desde 2024</p>
               <p style="margin-top: 15px; font-size: 12px;">
                 Este é um email automático, não responda.
               </p>

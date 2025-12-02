@@ -44,9 +44,12 @@ export default function PlanosPage() {
       {/* Pricing Cards */}
       <section className="py-16">
         <div className="container mx-auto px-4">
-          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
             {/* Plano Básico */}
-            <Card className="relative">
+            <Card className="relative border-primary">
+              <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-primary text-primary-foreground">
+                Mais Popular
+              </Badge>
               <CardHeader className="text-center pb-8">
                 <CardTitle className="text-2xl font-bold">Básico</CardTitle>
                 <div className="mt-4">
@@ -59,11 +62,15 @@ export default function PlanosPage() {
                 <ul className="space-y-3">
                   <li className="flex items-center gap-3">
                     <Check className="w-5 h-5 text-green-600" />
-                    <span className="text-sm">Até 5 serviços cadastrados</span>
+                    <span className="text-sm">Perfil completo na plataforma</span>
                   </li>
                   <li className="flex items-center gap-3">
                     <Check className="w-5 h-5 text-green-600" />
-                    <span className="text-sm">Perfil público completo</span>
+                    <span className="text-sm">1 categoria de serviço</span>
+                  </li>
+                  <li className="flex items-center gap-3">
+                    <Check className="w-5 h-5 text-green-600" />
+                    <span className="text-sm">Contato direto com clientes</span>
                   </li>
                   <li className="flex items-center gap-3">
                     <Check className="w-5 h-5 text-green-600" />
@@ -71,7 +78,7 @@ export default function PlanosPage() {
                   </li>
                   <li className="flex items-center gap-3">
                     <Check className="w-5 h-5 text-green-600" />
-                    <span className="text-sm">Contato via WhatsApp</span>
+                    <span className="text-sm">Dashboard básico</span>
                   </li>
                   <li className="flex items-center gap-3">
                     <Check className="w-5 h-5 text-green-600" />
@@ -82,56 +89,7 @@ export default function PlanosPage() {
                   <Link href="/cadastro-prestador">Começar Grátis</Link>
                 </Button>
                 <p className="text-xs text-center text-muted-foreground">
-                3 meses grátis, depois R$ 29/mês
-                </p>
-              </CardContent>
-            </Card>
-
-            {/* Plano Profissional */}
-            <Card className="relative border-primary shadow-lg scale-105">
-              <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-primary text-primary-foreground">
-                Mais Popular
-              </Badge>
-              <CardHeader className="text-center pb-8">
-                <CardTitle className="text-2xl font-bold">Profissional</CardTitle>
-                <div className="mt-4">
-                  <span className="text-4xl font-bold">R$ 59</span>
-                  <span className="text-muted-foreground">/mês</span>
-                </div>
-                <p className="text-sm text-muted-foreground mt-2">Para profissionais estabelecidos</p>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <ul className="space-y-3">
-                  <li className="flex items-center gap-3">
-                    <Check className="w-5 h-5 text-green-600" />
-                    <span className="text-sm">Até 15 serviços cadastrados</span>
-                  </li>
-                  <li className="flex items-center gap-3">
-                    <Check className="w-5 h-5 text-green-600" />
-                    <span className="text-sm">Portfolio com fotos</span>
-                  </li>
-                  <li className="flex items-center gap-3">
-                    <Check className="w-5 h-5 text-green-600" />
-                    <span className="text-sm">Selo de verificado</span>
-                  </li>
-                  <li className="flex items-center gap-3">
-                    <Check className="w-5 h-5 text-green-600" />
-                    <span className="text-sm">Destaque nos resultados</span>
-                  </li>
-                  <li className="flex items-center gap-3">
-                    <Check className="w-5 h-5 text-green-600" />
-                    <span className="text-sm">Relatórios de performance</span>
-                  </li>
-                  <li className="flex items-center gap-3">
-                    <Check className="w-5 h-5 text-green-600" />
-                    <span className="text-sm">Suporte prioritário</span>
-                  </li>
-                </ul>
-                <Button className="w-full mt-6" asChild>
-                  <Link href="/cadastro-prestador">Começar Grátis</Link>
-                </Button>
-                <p className="text-xs text-center text-muted-foreground">
-                  3 meses grátis, depois R$ 59/mês
+                30 dias grátis, depois R$ 29/mês
                 </p>
               </CardContent>
             </Card>
@@ -141,43 +99,50 @@ export default function PlanosPage() {
               <CardHeader className="text-center pb-8">
                 <CardTitle className="text-2xl font-bold">Premium</CardTitle>
                 <div className="mt-4">
-                  <span className="text-4xl font-bold">R$ 99</span>
+                  <span className="text-4xl font-bold">R$ 59</span>
                   <span className="text-muted-foreground">/mês</span>
                 </div>
-                <p className="text-sm text-muted-foreground mt-2">Para empresas e grandes prestadores</p>
+                <p className="text-sm text-muted-foreground mt-2">Para se destacar ainda mais</p>
               </CardHeader>
               <CardContent className="space-y-4">
                 <ul className="space-y-3">
                   <li className="flex items-center gap-3">
                     <Check className="w-5 h-5 text-green-600" />
-                    <span className="text-sm">Serviços ilimitados</span>
+                    <span className="text-sm">Tudo do plano básico</span>
                   </li>
                   <li className="flex items-center gap-3">
                     <Check className="w-5 h-5 text-green-600" />
-                    <span className="text-sm">Portfolio premium</span>
+                    <span className="text-sm">Destaque nos resultados</span>
                   </li>
                   <li className="flex items-center gap-3">
                     <Check className="w-5 h-5 text-green-600" />
-                    <span className="text-sm">Destaque máximo</span>
+                    <span className="text-sm">Selo "Premium"</span>
                   </li>
                   <li className="flex items-center gap-3">
                     <Check className="w-5 h-5 text-green-600" />
-                    <span className="text-sm">Integração WhatsApp Business</span>
+                    <span className="text-sm">Relatórios avançados</span>
                   </li>
                   <li className="flex items-center gap-3">
                     <Check className="w-5 h-5 text-green-600" />
-                    <span className="text-sm">Analytics avançados</span>
+                    <span className="text-sm">Suporte prioritário</span>
                   </li>
                   <li className="flex items-center gap-3">
                     <Check className="w-5 h-5 text-green-600" />
-                    <span className="text-sm">Suporte 24/7</span>
+                    <span className="text-sm">Calendário de agendamentos*</span>
+                  </li>
+                  <li className="flex items-center gap-3">
+                    <Check className="w-5 h-5 text-green-600" />
+                    <span className="text-sm">Chat direto com clientes*</span>
                   </li>
                 </ul>
                 <Button className="w-full mt-6" asChild>
                   <Link href="/cadastro-prestador">Começar Grátis</Link>
                 </Button>
                 <p className="text-xs text-center text-muted-foreground">
-                  3 meses grátis, depois R$ 99/mês
+                  30 dias grátis, depois R$ 59/mês
+                </p>
+                <p className="text-xs text-center text-muted-foreground mt-2">
+                  *Recursos em desenvolvimento
                 </p>
               </CardContent>
             </Card>
@@ -189,6 +154,7 @@ export default function PlanosPage() {
       <section className="py-16 bg-card/30">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center mb-12">Compare os Recursos</h2>
+          <p className="text-center text-muted-foreground mb-8">*Recursos em desenvolvimento para futuros lançamentos</p>
           <div className="max-w-4xl mx-auto">
             <div className="overflow-x-auto">
               <table className="w-full border-collapse">
@@ -196,30 +162,17 @@ export default function PlanosPage() {
                   <tr className="border-b">
                     <th className="text-left p-4 font-semibold">Recursos</th>
                     <th className="text-center p-4 font-semibold">Básico</th>
-                    <th className="text-center p-4 font-semibold">Profissional</th>
                     <th className="text-center p-4 font-semibold">Premium</th>
                   </tr>
                 </thead>
                 <tbody className="text-sm">
                   <tr className="border-b">
-                    <td className="p-4">Serviços cadastrados</td>
-                    <td className="text-center p-4">5</td>
-                    <td className="text-center p-4">15</td>
-                    <td className="text-center p-4">Ilimitados</td>
+                    <td className="p-4">Categorias de serviço</td>
+                    <td className="text-center p-4">1</td>
+                    <td className="text-center p-4">1</td>
                   </tr>
                   <tr className="border-b">
-                    <td className="p-4">Portfolio com fotos</td>
-                    <td className="text-center p-4">-</td>
-                    <td className="text-center p-4">
-                      <Check className="w-4 h-4 text-green-600 mx-auto" />
-                    </td>
-                    <td className="text-center p-4">
-                      <Check className="w-4 h-4 text-green-600 mx-auto" />
-                    </td>
-                  </tr>
-                  <tr className="border-b">
-                    <td className="p-4">Selo verificado</td>
-                    <td className="text-center p-4">-</td>
+                    <td className="p-4">Perfil completo</td>
                     <td className="text-center p-4">
                       <Check className="w-4 h-4 text-green-600 mx-auto" />
                     </td>
@@ -233,23 +186,30 @@ export default function PlanosPage() {
                     <td className="text-center p-4">
                       <Check className="w-4 h-4 text-green-600 mx-auto" />
                     </td>
+                  </tr>
+                  <tr className="border-b">
+                    <td className="p-4">Selo Premium</td>
+                    <td className="text-center p-4">-</td>
                     <td className="text-center p-4">
                       <Check className="w-4 h-4 text-green-600 mx-auto" />
                     </td>
                   </tr>
                   <tr className="border-b">
-                    <td className="p-4">Relatórios de performance</td>
+                    <td className="p-4">Relatórios avançados</td>
                     <td className="text-center p-4">-</td>
-                    <td className="text-center p-4">
-                      <Check className="w-4 h-4 text-green-600 mx-auto" />
-                    </td>
                     <td className="text-center p-4">
                       <Check className="w-4 h-4 text-green-600 mx-auto" />
                     </td>
                   </tr>
                   <tr className="border-b">
-                    <td className="p-4">Integração WhatsApp Business</td>
+                    <td className="p-4">Calendário de agendamentos*</td>
                     <td className="text-center p-4">-</td>
+                    <td className="text-center p-4">
+                      <Check className="w-4 h-4 text-green-600 mx-auto" />
+                    </td>
+                  </tr>
+                  <tr className="border-b">
+                    <td className="p-4">Chat com clientes*</td>
                     <td className="text-center p-4">-</td>
                     <td className="text-center p-4">
                       <Check className="w-4 h-4 text-green-600 mx-auto" />
@@ -259,7 +219,6 @@ export default function PlanosPage() {
                     <td className="p-4">Suporte</td>
                     <td className="text-center p-4">Email</td>
                     <td className="text-center p-4">Prioritário</td>
-                    <td className="text-center p-4">24/7</td>
                   </tr>
                 </tbody>
               </table>
@@ -322,7 +281,7 @@ export default function PlanosPage() {
               <CardContent className="p-6">
                 <h3 className="font-semibold mb-2">O que acontece no período de teste gratuito?</h3>
                 <p className="text-muted-foreground">
-                  Durante os 3 meses gratuitos, você tem acesso completo a todos os recursos do plano escolhido. 
+                  Durante os 30 dias gratuitos, você tem acesso completo a todos os recursos do plano escolhido. 
                   Não há cobrança até o final do período.
                 </p>
               </CardContent>
@@ -367,7 +326,7 @@ export default function PlanosPage() {
             <Button
               size="lg"
               variant="outline"
-              className="border-white text-white hover:bg-white/10"
+              className="bg-white text-primary hover:bg-white/90 font-semibold"
               asChild
             >
               <Link href="/contato">Falar com Vendas</Link>

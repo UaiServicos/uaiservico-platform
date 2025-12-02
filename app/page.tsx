@@ -167,49 +167,49 @@ export default function HomePage() {
                     <SelectValue placeholder="Sua cidade" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="todas">Todas as cidades</SelectItem>
+                    <SelectItem value="todas">Todas</SelectItem>
+                    <SelectItem value="araxa">Araxá</SelectItem>
                     <SelectItem value="belo-horizonte">Belo Horizonte</SelectItem>
-                    <SelectItem value="contagem">Contagem</SelectItem>
-                    <SelectItem value="uberlandia">Uberlândia</SelectItem>
-                    <SelectItem value="juiz-de-fora">Juiz de Fora</SelectItem>
                     <SelectItem value="betim">Betim</SelectItem>
-                    <SelectItem value="montes-claros">Montes Claros</SelectItem>
-                    <SelectItem value="ribeirao-das-neves">Ribeirão das Neves</SelectItem>
-                    <SelectItem value="uberaba">Uberaba</SelectItem>
-                    <SelectItem value="governador-valadares">Governador Valadares</SelectItem>
-                    <SelectItem value="ipatinga">Ipatinga</SelectItem>
-                    <SelectItem value="santa-luzia">Santa Luzia</SelectItem>
-                    <SelectItem value="sete-lagoas">Sete Lagoas</SelectItem>
+                    <SelectItem value="caete">Caeté</SelectItem>
+                    <SelectItem value="congonhas">Congonhas</SelectItem>
+                    <SelectItem value="contagem">Contagem</SelectItem>
+                    <SelectItem value="diamantina">Diamantina</SelectItem>
                     <SelectItem value="divinopolis">Divinópolis</SelectItem>
+                    <SelectItem value="formiga">Formiga</SelectItem>
+                    <SelectItem value="frutal">Frutal</SelectItem>
+                    <SelectItem value="governador-valadares">Governador Valadares</SelectItem>
                     <SelectItem value="ibirite">Ibirité</SelectItem>
+                    <SelectItem value="ipatinga">Ipatinga</SelectItem>
+                    <SelectItem value="itabira">Itabira</SelectItem>
+                    <SelectItem value="itauna">Itaúna</SelectItem>
+                    <SelectItem value="ituiutaba">Ituiutaba</SelectItem>
+                    <SelectItem value="juiz-de-fora">Juiz de Fora</SelectItem>
+                    <SelectItem value="lagoa-da-prata">Lagoa da Prata</SelectItem>
+                    <SelectItem value="lagoa-santa">Lagoa Santa</SelectItem>
+                    <SelectItem value="mariana">Mariana</SelectItem>
+                    <SelectItem value="montes-claros">Montes Claros</SelectItem>
+                    <SelectItem value="nova-lima">Nova Lima</SelectItem>
+                    <SelectItem value="ouro-preto">Ouro Preto</SelectItem>
                     <SelectItem value="passos">Passos</SelectItem>
                     <SelectItem value="patos-de-minas">Patos de Minas</SelectItem>
-                    <SelectItem value="pouso-alegre">Pouso Alegre</SelectItem>
-                    <SelectItem value="teofilo-otoni">Teófilo Otoni</SelectItem>
                     <SelectItem value="pocos-de-caldas">Poços de Caldas</SelectItem>
-                    <SelectItem value="patrocinio">Patrocínio</SelectItem>
-                    <SelectItem value="nova-lima">Nova Lima</SelectItem>
-                    <SelectItem value="itabira">Itabira</SelectItem>
-                    <SelectItem value="ouro-preto">Ouro Preto</SelectItem>
-                    <SelectItem value="diamantina">Diamantina</SelectItem>
-                    <SelectItem value="sao-joao-del-rei">São João del Rei</SelectItem>
-                    <SelectItem value="tiradentes">Tiradentes</SelectItem>
-                    <SelectItem value="mariana">Mariana</SelectItem>
-                    <SelectItem value="congonhas">Congonhas</SelectItem>
+                    <SelectItem value="pouso-alegre">Pouso Alegre</SelectItem>
+                    <SelectItem value="ribeirao-das-neves">Resende Costa</SelectItem>
+                    <SelectItem value="ribeirao-das-neves">Ribeirão das Neves</SelectItem>
                     <SelectItem value="sabara">Sabará</SelectItem>
-                    <SelectItem value="caete">Caeté</SelectItem>
-                    <SelectItem value="lagoa-santa">Lagoa Santa</SelectItem>
-                    <SelectItem value="vespasiano">Vespasiano</SelectItem>
                     <SelectItem value="santa-barbara">Santa Bárbara</SelectItem>
-                    <SelectItem value="itauna">Itaúna</SelectItem>
-                    <SelectItem value="formiga">Formiga</SelectItem>
-                    <SelectItem value="lagoa-da-prata">Lagoa da Prata</SelectItem>
-                    <SelectItem value="araxa">Araxá</SelectItem>
-                    <SelectItem value="frutal">Frutal</SelectItem>
-                    <SelectItem value="ituiutaba">Ituiutaba</SelectItem>
-                    <SelectItem value="monte-carmelo">Monte Carmelo</SelectItem>
+                    <SelectItem value="santa-luzia">Santa Luzia</SelectItem>
+                    <SelectItem value="sao-joao-del-rei">São João del Rei</SelectItem>
+                    <SelectItem value="sete-lagoas">Sete Lagoas</SelectItem>
+                    <SelectItem value="teofilo-otoni">Teófilo Otoni</SelectItem>
+                    <SelectItem value="tiradentes">Tiradentes</SelectItem>
+                    <SelectItem value="uberaba">Uberaba</SelectItem>
+                    <SelectItem value="uberlandia">Uberlândia</SelectItem>
+                    <SelectItem value="vespasiano">Vespasiano</SelectItem>
                     <SelectItem value="vicosa">Viçosa</SelectItem>
                   </SelectContent>
+
                 </Select>
               </div>
               <Button
@@ -247,28 +247,28 @@ export default function HomePage() {
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center mb-12">Principais Serviços</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-            {loading ? (
-              // Loading skeleton
-              Array.from({ length: 12 }).map((_, index) => (
-                <Card key={index} className="animate-pulse">
-                  <CardContent className="p-4 text-center">
-                    <div className="w-12 h-12 bg-muted rounded mx-auto mb-2"></div>
-                    <div className="h-4 bg-muted rounded mb-1"></div>
-                    <div className="h-3 bg-muted rounded w-3/4 mx-auto"></div>
-                  </CardContent>
-                </Card>
-              ))
-            ) : (
-              stats?.categoryStats.map((service) => (
-                <Card key={service.name} className="hover:shadow-md transition-shadow cursor-pointer group">
-                  <CardContent className="p-4 text-center">
-                    <div className="text-3xl mb-2 group-hover:scale-110 transition-transform">{service.icon}</div>
-                    <h3 className="font-semibold text-sm mb-1">{service.name}</h3>
-                    <p className="text-xs text-muted-foreground">{service.count} profissionais</p>
-                  </CardContent>
-                </Card>
-              ))
-            )}
+            {[
+              { name: "Elétrica", icon: "⚡", description: "Instalações e reparos elétricos" },
+              { name: "Encanamento", icon: "🔧", description: "Reparos e instalações hidráulicas" },
+              { name: "Construção", icon: "🔨", description: "Obras e reformas gerais" },
+              { name: "Limpeza", icon: "🧹", description: "Serviços de limpeza doméstica" },
+              { name: "Jardinagem", icon: "🌱", description: "Cuidados com jardins e plantas" },
+              { name: "Pintura", icon: "🎨", description: "Pintura residencial e comercial" },
+              { name: "Marcenaria", icon: "🪚", description: "Móveis e trabalhos em madeira" },
+              { name: "Mecânica", icon: "🔩", description: "Reparos automotivos" },
+              { name: "Costura", icon: "✂️", description: "Serviços de costura e reformas" },
+              { name: "Culinária", icon: "👩‍🍳", description: "Serviços culinários" },
+              { name: "Cuidados Infantis", icon: "👶", description: "Babás e cuidadores" },
+              { name: "Cuidados com Pets", icon: "🐕", description: "Pet sitters e veterinários" },
+            ].map((service) => (
+              <Card key={service.name} className="hover:shadow-md transition-shadow cursor-pointer group">
+                <CardContent className="p-4 text-center">
+                  <div className="text-3xl mb-2 group-hover:scale-110 transition-transform">{service.icon}</div>
+                  <h3 className="font-semibold text-sm mb-1">{service.name}</h3>
+                  <p className="text-xs text-muted-foreground">{service.description}</p>
+                </CardContent>
+              </Card>
+            ))}
           </div>
         </div>
       </section>
@@ -496,7 +496,7 @@ export default function HomePage() {
             className="bg-white text-primary hover:bg-white/90 font-semibold"
             asChild
           >
-            <Link href="/cadastro-prestador">Cadastrar Agora - Grátis por 30 dias</Link>
+            <Link href="/cadastro-prestador">Cadastrar Agora - Grátis por 3 meses</Link>
           </Button>
         </div>
       </section>

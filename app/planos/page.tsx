@@ -82,7 +82,7 @@ export default function PlanosPage() {
                   <Link href="/cadastro-prestador">Começar Grátis</Link>
                 </Button>
                 <p className="text-xs text-center text-muted-foreground">
-                  30 dias grátis, depois R$ 29/mês
+                3 meses grátis, depois R$ 29/mês
                 </p>
               </CardContent>
             </Card>
@@ -131,7 +131,7 @@ export default function PlanosPage() {
                   <Link href="/cadastro-prestador">Começar Grátis</Link>
                 </Button>
                 <p className="text-xs text-center text-muted-foreground">
-                  30 dias grátis, depois R$ 59/mês
+                  3 meses grátis, depois R$ 59/mês
                 </p>
               </CardContent>
             </Card>
@@ -177,7 +177,7 @@ export default function PlanosPage() {
                   <Link href="/cadastro-prestador">Começar Grátis</Link>
                 </Button>
                 <p className="text-xs text-center text-muted-foreground">
-                  30 dias grátis, depois R$ 99/mês
+                  3 meses grátis, depois R$ 99/mês
                 </p>
               </CardContent>
             </Card>
@@ -322,7 +322,7 @@ export default function PlanosPage() {
               <CardContent className="p-6">
                 <h3 className="font-semibold mb-2">O que acontece no período de teste gratuito?</h3>
                 <p className="text-muted-foreground">
-                  Durante os 30 dias gratuitos, você tem acesso completo a todos os recursos do plano escolhido. 
+                  Durante os 3 meses gratuitos, você tem acesso completo a todos os recursos do plano escolhido. 
                   Não há cobrança até o final do período.
                 </p>
               </CardContent>
